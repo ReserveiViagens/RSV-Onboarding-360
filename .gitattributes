@@ -1,0 +1,4 @@
+*League_Gothic filter=lfs diff=lfs merge=lfs -text
+Merriweather filter=lfs diff=lfs merge=lfs -text
+Playfair_Display.zip filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text

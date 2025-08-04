@@ -1,0 +1,20 @@
+﻿{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install Dependencies",
+      "type": "shell",
+      "command": "pip install fastapi uvicorn torch rasa && cd frontend && npm install"
+    },
+    {
+      "label": "Run API",
+      "type": "shell",
+      "command": "uvicorn api-custom.main:app --reload"
+    },
+    {
+      "label": "Docker Up",
+      "type": "shell",
+      "command": "docker-compose up"
+    }
+  ]
+}
