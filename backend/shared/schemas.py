@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -635,4 +635,52 @@ class PhotoShare(PhotoShareBase):
         from_attributes = True
 
 class PhotoShareCreate(PhotoShareBase):
-    pass 
+    pass
+
+# ========================================
+# REPORTS SCHEMAS
+# ========================================
+
+class ReportBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    report_type: str
+    parameters: Optional[str] = None
+
+class ReportCreate(ReportBase):
+    pass
+
+class ReportResponse(ReportBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class ReportTemplateBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    template_type: str
+    template_config: Optional[str] = None
+
+class ReportTemplateCreate(ReportTemplateBase):
+    pass
+
+class ReportScheduleBase(BaseModel):
+    report_id: int
+    schedule_type: str
+    schedule_config: Optional[str] = None
+    is_active: bool = True
+
+class ReportScheduleCreate(ReportScheduleBase):
+    pass
+
+class ReportFilter(BaseModel):
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    filter_type: Optional[str] = None
+    filter_value: Optional[str] = None
+
+class ReportExport(BaseModel):
+    format: str = "json"
+    include_raw_data: bool = False 

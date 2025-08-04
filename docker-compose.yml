@@ -158,3 +158,99 @@ services:
     ports:
       - "5022:8024"
     command: uvicorn app:app --host 0.0.0.0 --port 8024
+
+  admin:
+    build:
+      context: .
+      dockerfile: backend/admin/Dockerfile
+    ports:
+      - "5023:8025"
+    command: uvicorn app:app --host 0.0.0.0 --port 8025
+
+  analytics:
+    build:
+      context: ./backend/analytics
+      dockerfile: Dockerfile
+    ports:
+      - "5024:8026"
+    command: uvicorn app:app --host 0.0.0.0 --port 8026
+
+  reports:
+    build:
+      context: .
+      dockerfile: backend/reports/Dockerfile
+    ports:
+      - "5025:8027"
+    command: uvicorn app:app --host 0.0.0.0 --port 8027
+
+  data:
+    build:
+      context: .
+      dockerfile: backend/data/Dockerfile
+    ports:
+      - "5026:8028"
+    command: uvicorn app:app --host 0.0.0.0 --port 8028
+
+  notifications:
+    build:
+      context: ./backend/notifications
+      dockerfile: Dockerfile
+    ports:
+      - "5027:8029"
+    command: uvicorn app:app --host 0.0.0.0 --port 8029
+
+  reviews:
+    build:
+      context: ./backend/reviews
+      dockerfile: Dockerfile
+    ports:
+      - "5028:8030"
+    command: uvicorn app:app --host 0.0.0.0 --port 8030
+
+  rewards:
+    build:
+      context: ./backend/rewards
+      dockerfile: Dockerfile
+    ports:
+      - "5029:8031"
+    command: uvicorn app:app --host 0.0.0.0 --port 8031
+
+  loyalty:
+    build:
+      context: ./backend/loyalty
+      dockerfile: Dockerfile
+    ports:
+      - "5030:8032"
+    command: uvicorn app:app --host 0.0.0.0 --port 8032
+
+  sales:
+    build:
+      context: ./backend/sales
+      dockerfile: Dockerfile
+    ports:
+      - "5031:8033"
+    command: uvicorn app:app --host 0.0.0.0 --port 8033
+
+  sectoral_finance:
+    build:
+      context: ./backend/sectoral_finance
+      dockerfile: Dockerfile
+    ports:
+      - "5032:8034"
+    command: uvicorn app:app --host 0.0.0.0 --port 8034
+
+  refunds:
+    build:
+      context: ./backend/refunds
+      dockerfile: Dockerfile
+    ports:
+      - "5033:8035"
+    command: uvicorn app:app --host 0.0.0.0 --port 8035
+
+  inventory:
+    build:
+      context: ./backend/inventory
+      dockerfile: Dockerfile
+    ports:
+      - "5034:8036"
+    command: uvicorn app:app --host 0.0.0.0 --port 8036

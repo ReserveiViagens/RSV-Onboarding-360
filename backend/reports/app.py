@@ -10,14 +10,22 @@ from datetime import datetime, timedelta
 import asyncio
 from pathlib import Path
 
-from backend.shared.config.database import get_db
-from backend.shared.models.reports import Report, ReportTemplate, ReportSchedule
-from backend.shared.schemas import (
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from shared.config.database import get_db
+from shared.models.reports import Report, ReportTemplate, ReportSchedule
+from shared.schemas import (
     ReportCreate, ReportResponse, ReportTemplateCreate, 
     ReportScheduleCreate, ReportFilter, ReportExport
 )
 
 app = FastAPI(title="Reports Service", version="1.0.0")
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "reports", "version": "1.0.0"}
 
 # Configuração de diretórios
 REPORTS_DIR = Path("reports")
