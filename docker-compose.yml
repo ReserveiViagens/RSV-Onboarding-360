@@ -1,0 +1,160 @@
+services:
+  core:
+    build:
+      context: .
+      dockerfile: backend/core/Dockerfile
+    ports:
+      - "5000:5000"
+    command: uvicorn app:app --host 0.0.0.0 --port 5000 --reload
+
+  travel:
+    build:
+      context: .
+      dockerfile: backend/travel/Dockerfile
+    ports:
+      - "5003:5003"
+    command: uvicorn app:app --host 0.0.0.0 --port 5003 --reload
+
+  finance:
+    build:
+      context: .
+      dockerfile: backend/finance/Dockerfile
+    ports:
+      - "5005:5005"
+    command: uvicorn app:app --host 0.0.0.0 --port 5005 --reload
+
+  tickets:
+    build:
+      context: .
+      dockerfile: backend/tickets/Dockerfile
+    ports:
+      - "5006:5006"
+    command: uvicorn app:app --host 0.0.0.0 --port 5006 --reload
+
+  attractions:
+    build:
+      context: .
+      dockerfile: backend/attractions/Dockerfile
+    ports:
+      - "5009:5009"
+    command: uvicorn app:app --host 0.0.0.0 --port 5009 --reload
+
+  payments:
+    build:
+      context: ./backend/payments
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5005"
+    command: uvicorn app:app --host 0.0.0.0 --port 5005 --reload
+
+  ecommerce:
+    build:
+      context: .
+      dockerfile: backend/ecommerce/Dockerfile
+    ports:
+      - "5008:5007"
+    command: uvicorn app:app --host 0.0.0.0 --port 5007
+
+  vouchers:
+    build:
+      context: ./backend/vouchers
+      dockerfile: Dockerfile
+    ports:
+      - "5010:5028"
+    command: uvicorn app:app --host 0.0.0.0 --port 5028
+
+  voucher-editor:
+    build:
+      context: ./backend/voucher-editor
+      dockerfile: Dockerfile
+    ports:
+      - "5011:5029"
+    command: uvicorn app:app --host 0.0.0.0 --port 5029
+
+  giftcards:
+    build:
+      context: ./backend/giftcards
+      dockerfile: Dockerfile
+    ports:
+      - "5012:5028"
+    command: uvicorn app:app --host 0.0.0.0 --port 5028
+
+  coupons:
+    build:
+      context: ./backend/coupons
+      dockerfile: Dockerfile
+    ports:
+      - "5013:8012"
+    command: uvicorn app:app --host 0.0.0.0 --port 8012
+
+  parks:
+    build:
+      context: ./backend/parks
+      dockerfile: Dockerfile
+    ports:
+      - "5014:5008"
+    command: uvicorn app:app --host 0.0.0.0 --port 5008
+
+  maps:
+    build:
+      context: .
+      dockerfile: backend/maps/Dockerfile
+    ports:
+      - "5015:8022"
+    command: uvicorn app:app --host 0.0.0.0 --port 8022
+
+  visa:
+    build:
+      context: .
+      dockerfile: backend/visa/Dockerfile
+    ports:
+      - "5016:8017"
+    command: uvicorn app:app --host 0.0.0.0 --port 8017
+
+  marketing:
+    build:
+      context: ./backend/marketing
+      dockerfile: Dockerfile
+    ports:
+      - "5017:5014"
+    command: uvicorn app:app --host 0.0.0.0 --port 5014
+
+  subscriptions:
+    build:
+      context: ./backend/subscriptions
+      dockerfile: Dockerfile
+    ports:
+      - "5018:8010"
+    command: uvicorn app:app --host 0.0.0.0 --port 8010
+
+  seo:
+    build:
+      context: ./backend/seo
+      dockerfile: Dockerfile
+    ports:
+      - "5019:8008"
+    command: uvicorn app:app --host 0.0.0.0 --port 8008
+
+  multilingual:
+    build:
+      context: ./backend/multilingual
+      dockerfile: Dockerfile
+    ports:
+      - "5020:8009"
+    command: uvicorn app:app --host 0.0.0.0 --port 8009
+
+  videos:
+    build:
+      context: .
+      dockerfile: backend/videos/Dockerfile
+    ports:
+      - "5021:8023"
+    command: uvicorn app:app --host 0.0.0.0 --port 8023
+
+  photos:
+    build:
+      context: .
+      dockerfile: backend/photos/Dockerfile
+    ports:
+      - "5022:8024"
+    command: uvicorn app:app --host 0.0.0.0 --port 8024
