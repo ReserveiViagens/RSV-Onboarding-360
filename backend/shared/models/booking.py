@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship
-from backend.shared.config.database import Base
+from shared.config.database import Base
 from datetime import datetime
 
 class Booking(Base):

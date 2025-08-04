@@ -8,14 +8,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements
-COPY requirements.txt .
+COPY backend/data/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar código
-COPY . .
+COPY backend/data .
+COPY backend/shared shared
+RUN pip install --no-cache-dir shared
 
 # Expor portas
-EXPOSE 5004 8000
+EXPOSE 8028
 
 # Comando para executar
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5004", "--reload"] 
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8028"] 

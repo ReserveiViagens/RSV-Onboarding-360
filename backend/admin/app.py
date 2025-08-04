@@ -9,10 +9,12 @@ import json
 from datetime import datetime, timedelta
 from pydantic import BaseModel, validator
 
-from backend.shared.config.database import get_db
-from backend.shared.models.booking import Booking
-from backend.shared.models.user import User
-from backend.core.security import get_current_user, SecurityUtils
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from shared.config.database import get_db
+from shared.models.booking import Booking
+from shared.models.user import User
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +28,10 @@ app = FastAPI(
     version="2.1.0",
     description="Interface administrativa para gerenciamento de eventos personalizados"
 )
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "admin", "version": "2.1.0"}
 
 # Configurar CORS
 app.add_middleware(

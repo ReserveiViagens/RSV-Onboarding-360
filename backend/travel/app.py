@@ -1,22 +1,25 @@
 from fastapi import FastAPI
+from datetime import datetime
+import logging
 
+# Configuração de logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# FastAPI App
 app = FastAPI(title="Travel Service", version="1.0.0")
 
-@app.get("/")
-def read_root():
-    return {"message": "Travel Service is running!", "status": "active"}
-
 @app.get("/health")
-def health_check():
+async def health_check():
     return {"status": "healthy", "service": "travel", "version": "1.0.0"}
 
-@app.get("/flights/")
-def get_flights():
-    return {"message": "Flights endpoint", "data": []}
-
-@app.get("/hotels/")
-def get_hotels():
-    return {"message": "Hotels endpoint", "data": []}
+@app.get("/")
+async def root():
+    return {
+        "message": "Travel Service is running!", 
+        "timestamp": datetime.now(),
+        "status": "active"
+    }
 
 @app.get("/api/status")
 def api_status():
@@ -24,9 +27,9 @@ def api_status():
         "service": "travel",
         "status": "running",
         "version": "1.0.0",
-        "endpoints": ["/", "/health", "/flights/", "/hotels/", "/api/status"]
+        "endpoints": ["/", "/health", "/api/status"]
     }
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5003) 
+    uvicorn.run(app, host="0.0.0.0", port=5003)
