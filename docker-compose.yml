@@ -1,4 +1,67 @@
 services:
+  # 🐘 Database PostgreSQL Otimizado
+  postgres:
+    build:
+      context: database
+      dockerfile: Dockerfile
+    container_name: onion-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: onion_rsv_360_secure!
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_archive:/var/lib/postgresql/archive
+      - postgres_backup:/var/lib/postgresql/backup
+      - postgres_logs:/var/log/postgresql
+    networks:
+      - onion-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command:
+      [
+        "postgres",
+        "-c",
+        "config_file=/etc/postgresql/postgresql.conf",
+        "-c",
+        "hba_file=/etc/postgresql/pg_hba.conf",
+      ]
+
+  # 🌐 Load Balancer / API Gateway
+  nginx:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "8080:8080" # Monitoring
+    depends_on:
+      - core
+      - travel
+      - finance
+      - tickets
+      - attractions
+      - payments
+      - ecommerce
+    networks:
+      - onion-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - nginx_logs:/var/log/nginx
   core:
     build:
       context: .
@@ -254,3 +317,21 @@ services:
     ports:
       - "5034:8036"
     command: uvicorn app:app --host 0.0.0.0 --port 8036
+
+# Redes
+networks:
+  onion-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  nginx_logs:
+    driver: local
+  postgres_data:
+    driver: local
+  postgres_archive:
+    driver: local
+  postgres_backup:
+    driver: local
+  postgres_logs:
+    driver: local

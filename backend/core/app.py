@@ -1,22 +1,95 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import List, Dict, Any
 import logging
+import sys
+import os
+
+# Adicionar path para módulos compartilhados
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Importar configuração de documentação
+from shared.docs.swagger_config import setup_service_docs
+
+# Modelos Pydantic para documentação
+class HealthResponse(BaseModel):
+    """Resposta do health check"""
+    status: str = Field(..., example="healthy", description="Status do serviço")
+    service: str = Field(..., example="core", description="Nome do serviço")
+    version: str = Field(..., example="1.0.0", description="Versão do serviço")
+    security: str = Field(..., example="enabled", description="Status da segurança")
+
+class SystemInfo(BaseModel):
+    """Informações do sistema"""
+    message: str = Field(..., description="Mensagem de status")
+    timestamp: datetime = Field(..., description="Timestamp atual")
+    status: str = Field(..., example="active", description="Status do sistema")
+    security_features: List[str] = Field(..., description="Recursos de segurança ativos")
+
+class AuthDemoResponse(BaseModel):
+    """Resposta da demonstração de autenticação"""
+    message: str = Field(..., description="Mensagem explicativa")
+    demo_token: str = Field(..., description="Token de demonstração")
+    instructions: str = Field(..., description="Instruções de uso")
+    security_note: str = Field(..., description="Nota sobre segurança")
+    usage: str = Field(..., description="Como usar o token")
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# FastAPI App com segurança básica
-app = FastAPI(
-    title="Core Service - Onion RSV 360", 
-    version="1.0.0",
-    description="Microserviço Core com segurança implementada"
+# FastAPI App
+app = FastAPI()
+
+# Configurar documentação automática
+setup_service_docs(
+    app, 
+    service_name="core",
+    service_description="🔧 Serviço central do sistema Onion RSV 360 - autenticação, configurações e coordenação geral"
 )
 
-@app.get("/health")
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+    tags=["System"],
+    summary="Health Check",
+    description="Verifica se o serviço está funcionando corretamente",
+    responses={
+        200: {
+            "description": "Serviço funcionando normalmente",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "healthy",
+                        "service": "core", 
+                        "version": "1.0.0",
+                        "security": "enabled"
+                    }
+                }
+            }
+        }
+    }
+)
 async def health_check():
-    """Endpoint público de health check"""
-    return {"status": "healthy", "service": "core", "version": "1.0.0", "security": "enabled"}
+    """
+    ## Health Check do Core Service
+    
+    Endpoint público para verificar se o serviço está funcionando.
+    
+    **Uso:** Ideal para load balancers e sistemas de monitoramento.
+    
+    **Retorna:**
+    - Status atual do serviço
+    - Versão da aplicação
+    - Status da segurança
+    """
+    return HealthResponse(
+        status="healthy",
+        service="core", 
+        version="1.0.0",
+        security="enabled"
+    )
 
 @app.get("/")
 async def root():
