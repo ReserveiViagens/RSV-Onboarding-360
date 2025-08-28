@@ -19,11 +19,15 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120000
   },
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
+  projects: (() => {
+    const base = [
+      { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    ] as any[];
+    if (process.env.ALL_BROWSERS === '1') {
+      base.push({ name: 'firefox', use: { ...devices['Desktop Firefox'] } });
+      base.push({ name: 'webkit', use: { ...devices['Desktop Safari'] } });
+    }
+    return base;
+  })(),
 });
 

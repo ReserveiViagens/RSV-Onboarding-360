@@ -5,6 +5,8 @@ import { AnalyticsCharts } from '../components/dashboard/AnalyticsCharts'
 import { BookingsList } from '../components/dashboard/BookingsList'
 import { QuickActions } from '../components/dashboard/QuickActions'
 import { useBooking } from '../src/hooks/useBooking'
+import ProtectedRoute from '../components/ProtectedRoute'
+import { Protected } from '../components/rbac/Protected'
 
 export default function DashboardV2() {
   const { data: bookings = [] } = useBooking()
@@ -40,22 +42,27 @@ export default function DashboardV2() {
       <Head>
         <title>Dashboard V2</title>
       </Head>
-      <div style={{ padding: 24, display: 'grid', gap: 12 }}>
-        <StatsCards data={stats} />
-        <AnalyticsCharts
-          revenueByMonth={revenueByMonth}
-          popularDestinations={popularDestinations}
-          bookingStatus={bookingStatus}
-          customerGrowth={customerGrowth}
-        />
-        <QuickActions
-          onNewBooking={() => alert('Nova reserva')}
-          onNewCustomer={() => alert('Adicionar cliente')}
-          onMonthlyReport={() => alert('Relatório mensal')}
-          onSettings={() => alert('Configurações')}
-        />
-        <BookingsList items={bookings} />
-      </div>
+      <ProtectedRoute>
+        <div style={{ padding: 24, display: 'grid', gap: 12 }}>
+          <Protected permission="admin">
+            <button aria-label="Botão admin" style={{ justifySelf: 'end' }}>Apenas Admin</button>
+          </Protected>
+          <StatsCards data={stats} />
+          <AnalyticsCharts
+            revenueByMonth={revenueByMonth}
+            popularDestinations={popularDestinations}
+            bookingStatus={bookingStatus}
+            customerGrowth={customerGrowth}
+          />
+          <QuickActions
+            onNewBooking={() => alert('Nova reserva')}
+            onNewCustomer={() => alert('Adicionar cliente')}
+            onMonthlyReport={() => alert('Relatório mensal')}
+            onSettings={() => alert('Configurações')}
+          />
+          <BookingsList items={bookings} />
+        </div>
+      </ProtectedRoute>
     </>
   )
 }
