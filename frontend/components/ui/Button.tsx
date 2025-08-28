@@ -41,7 +41,8 @@ export const Button: React.FC<ButtonProps> = ({
     primary: { background: designTokens.colors.primary, color: '#fff' },
     secondary: { background: designTokens.colors.secondary, color: '#052e2b' },
     ghost: { background: 'transparent', color: designTokens.colors.text, borderColor: '#2A3447' },
-    danger: { background: designTokens.colors.danger, color: '#fff' }
+    // Ajuste de contraste para atender WCAG
+    danger: { background: '#B91C1C', color: '#fff' }
   }
 
   const style: React.CSSProperties = {

@@ -30,7 +30,7 @@ export default function UiDemoPage() {
       <Head>
         <title>UI Demo</title>
       </Head>
-      <div style={{ padding: 24, display: 'grid', gap: 16 }}>
+      <main style={{ padding: 24, display: 'grid', gap: 16, background: '#0B1220' }}>
         <h1 style={{ color: '#E2E8F0' }}>Componentes Base</h1>
         <Card title="Buttons" actions={<Avatar name="Usuário Demo" />}> 
           <div style={{ display: 'flex', gap: 12 }}>
@@ -64,7 +64,7 @@ export default function UiDemoPage() {
             </div>
           </Modal>
         </Card>
-      </div>
+      </main>
     </>
   )
 }

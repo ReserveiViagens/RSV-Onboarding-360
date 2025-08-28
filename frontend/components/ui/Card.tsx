@@ -28,7 +28,7 @@ export const Card: React.FC<CardProps> = ({ title, actions, children }) => {
             color: designTokens.colors.text
           }}
         >
-          <h3 style={{ margin: 0, fontSize: 16 }}>{title}</h3>
+          <h2 style={{ margin: 0, fontSize: 18 }}>{title}</h2>
           <div>{actions}</div>
         </div>
       )}

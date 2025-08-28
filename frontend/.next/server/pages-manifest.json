@@ -2,5 +2,14 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/notifications-v2": "pages/notifications-v2.js"
+  "/bookings-v2": "pages/bookings-v2.js",
+  "/ui-demo": "pages/ui-demo.js",
+  "/customers-v2": "pages/customers-v2.js",
+  "/dashboard-v2": "pages/dashboard-v2.js",
+  "/notifications-v2": "pages/notifications-v2.js",
+  "/login": "pages/login.js",
+  "/dashboard": "pages/dashboard.js",
+  "/admin-test": "pages/admin-test.js",
+  "/": "pages/index.js",
+  "/travel-v2": "pages/travel-v2.js"
 }
