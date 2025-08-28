@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+export type UserRole = 'admin' | 'agent' | 'user';
+
 interface User {
   id: number;
   email: string;
@@ -19,6 +21,7 @@ interface AuthContextType {
   logout: () => void;
   accessToken: string | null;
   refreshToken: string | null;
+  hasPermission: (perm: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -67,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           email: 'admin@onion360.com',
           full_name: 'Administrador Onion 360',
           is_active: true,
-          permissions: ['admin', 'user'],
+          permissions: ['*', 'admin', 'user'],
           created_at: new Date().toISOString(),
           last_login: new Date().toISOString()
         };
@@ -77,7 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           email: 'demo@onionrsv.com',
           full_name: 'Usuário Demo',
           is_active: true,
-          permissions: ['admin'],
+          permissions: ['bookings.*', 'customers.*', 'user'],
           created_at: new Date().toISOString(),
           last_login: new Date().toISOString()
         };
@@ -114,6 +117,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     router.push('/login');
   };
 
+  const hasPermission = (perm: string): boolean => {
+    if (!user) return false;
+    const perms = user.permissions || [];
+    if (perms.includes('*')) return true;
+    // suporte a namespaces tipo bookings.*
+    const [ns] = perm.split('.');
+    return perms.includes(perm) || perms.includes(`${ns}.*`);
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
@@ -121,7 +133,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     accessToken,
-    refreshToken
+    refreshToken,
+    hasPermission
   };
 
   return (
