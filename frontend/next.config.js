@@ -32,6 +32,12 @@ const nextConfig = {
           tls: false
         }
       }
+
+      // Reduz warnings Watchpack definindo padrões de ignorados
+      config.watchOptions = {
+        ...(config.watchOptions || {}),
+        ignored: ['**/node_modules/**', '**/.git/**', '**/DumpStack.log.tmp', '**/pagefile.sys']
+      }
     }
     return config
   },
