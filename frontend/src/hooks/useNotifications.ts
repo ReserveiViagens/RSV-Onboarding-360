@@ -47,7 +47,11 @@ export const useNotifications = () => {
   }, [])
 
   const markAsRead = (id: string) => setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+  const trigger = (n: Omit<AppNotification, 'id' | 'createdAt'>) => setNotifications((prev) => [
+    { id: String(Date.now()), createdAt: new Date().toISOString(), ...n },
+    ...prev,
+  ])
 
-  return { notifications, markAsRead }
+  return { notifications, markAsRead, trigger }
 }
 

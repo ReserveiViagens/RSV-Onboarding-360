@@ -23,10 +23,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/travel-v2": [
+    "/notifications-v2": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/travel-v2.js"
+      "static/chunks/pages/notifications-v2.js"
     ]
   },
   "ampFirstPages": []
