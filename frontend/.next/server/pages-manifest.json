@@ -2,5 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/bookings-v2": "pages/bookings-v2.js"
+  "/customers-v2": "pages/customers-v2.js"
 }
