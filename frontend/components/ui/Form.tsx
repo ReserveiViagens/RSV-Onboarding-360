@@ -1,5 +1,5 @@
 import React from 'react'
-import { useForm, FormProvider } from 'react-hook-form'
+import { useForm, FormProvider, useFormContext } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ZodType, z } from 'zod'
 import { designTokens } from '../../styles/design-tokens'
@@ -31,12 +31,15 @@ interface FieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Field: React.FC<FieldProps> = ({ name, label, ...props }) => {
-  const { register, formState } = (FormProvider as any)._context._currentValue
-  const error = formState?.errors?.[name]?.message as string | undefined
+  const { register, formState } = useFormContext()
+  const error = (formState?.errors as any)?.[name]?.message as string | undefined
+  const inputId = `field-${name}`
   return (
-    <label style={{ display: 'grid', gap: 6, color: designTokens.colors.text }}>
+    <label htmlFor={inputId} style={{ display: 'grid', gap: 6, color: designTokens.colors.text }}>
       <span style={{ fontSize: 12, opacity: 0.9 }}>{label}</span>
       <input
+        id={inputId}
+        aria-label={label}
         {...register(name)}
         {...props}
         style={{

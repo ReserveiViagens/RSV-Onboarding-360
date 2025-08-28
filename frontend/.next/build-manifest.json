@@ -23,10 +23,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/dashboard-v2": [
+    "/bookings-v2": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/dashboard-v2.js"
+      "static/chunks/pages/bookings-v2.js"
     ]
   },
   "ampFirstPages": []
