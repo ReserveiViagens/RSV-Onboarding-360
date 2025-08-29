@@ -19,6 +19,7 @@ interface AuthContextType {
   logout: () => void;
   accessToken: string | null;
   refreshToken: string | null;
+  hasPermission: (permission: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -114,6 +115,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     router.push('/login');
   };
 
+  const hasPermission = (permission: string): boolean => {
+    if (!user) return false;
+    if (!permission) return true;
+    // Suporte a curingas simples, ex: "bookings.*"
+    if (permission.endsWith('.*')) {
+      const prefix = permission.replace('.*', '');
+      return user.permissions?.some((p) => p === '*' || p.startsWith(prefix + '.')) || false;
+    }
+    return user.permissions?.includes('*') || user.permissions?.includes(permission) || false;
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
@@ -121,7 +133,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     accessToken,
-    refreshToken
+    refreshToken,
+    hasPermission
   };
 
   return (

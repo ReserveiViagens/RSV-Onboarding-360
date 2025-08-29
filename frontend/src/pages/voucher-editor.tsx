@@ -773,7 +773,7 @@ export default function VoucherEditor() {
     try {
       const options = {
         errorCorrectionLevel: qrCodeErrorLevel,
-        type: 'image/png',
+        type: 'image/png' as const,
         quality: 0.92,
         margin: 1,
         color: {

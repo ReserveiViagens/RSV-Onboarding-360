@@ -639,7 +639,7 @@ export default function Marketing() {
                                     </div>
                                     <div className={`p-3 rounded-lg ${metric.color} flex-shrink-0 ml-4 self-start`}>
                                         <div className="w-6 h-6 flex items-center justify-center">
-                                            {React.cloneElement(metric.icon as React.ReactElement, { className: 'w-5 h-5' })}
+                                            {React.cloneElement(metric.icon as React.ReactElement, { className: 'w-5 h-5' } as any)}
                                         </div>
                                     </div>
                                 </div>

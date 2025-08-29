@@ -1,0 +1,76 @@
+Domínios e áreas
+Site principal (público): https://www.reserveiviagens.com.br
+API (backend): https://api.reserveiviagens.com.br
+Painel do cliente (app): https://app.reserveiviagens.com.br
+Painel administrativo: https://painel.reserveiviagens.com.br
+Status: https://status.reserveiviagens.com.br
+Documentação (opcional): https://docs.reserveiviagens.com.br
+CDN/estáticos (opcional): https://cdn.reserveiviagens.com.br
+Site principal (páginas públicas)
+https://www.reserveiviagens.com.br/
+https://www.reserveiviagens.com.br/hoteis
+https://www.reserveiviagens.com.br/ingressos
+https://www.reserveiviagens.com.br/atracoes
+https://www.reserveiviagens.com.br/promocoes
+https://www.reserveiviagens.com.br/contato
+https://www.reserveiviagens.com.br/politica-privacidade
+https://www.reserveiviagens.com.br/login
+https://www.reserveiviagens.com.br/cadastro
+https://www.reserveiviagens.com.br/esqueci-senha
+https://www.reserveiviagens.com.br/reset-senha
+https://www.reserveiviagens.com.br/booking
+https://www.reserveiviagens.com.br/travel
+https://www.reserveiviagens.com.br/travel/[id]
+Painel do cliente (app)
+https://app.reserveiviagens.com.br/login
+https://app.reserveiviagens.com.br/dashboard
+https://app.reserveiviagens.com.br/minhas-reservas
+https://app.reserveiviagens.com.br/pagamentos
+https://app.reserveiviagens.com.br/perfil
+https://app.reserveiviagens.com.br/suporte
+Painel administrativo (operacional)
+https://painel.reserveiviagens.com.br/login
+https://painel.reserveiviagens.com.br/dashboard
+https://painel.reserveiviagens.com.br/travel
+https://painel.reserveiviagens.com.br/customers
+https://painel.reserveiviagens.com.br/booking
+https://painel.reserveiviagens.com.br/reports
+https://painel.reserveiviagens.com.br/maps
+https://painel.reserveiviagens.com.br/permissions
+https://painel.reserveiviagens.com.br/billing
+https://painel.reserveiviagens.com.br/analytics-dashboard
+https://painel.reserveiviagens.com.br/settings/branding
+https://painel.reserveiviagens.com.br/guests
+API (serviços principais)
+Saúde/Status:
+https://api.reserveiviagens.com.br/health
+https://api.reserveiviagens.com.br/api/status
+Autenticação/CSRF:
+POST https://api.reserveiviagens.com.br/api/core/token
+POST https://api.reserveiviagens.com.br/api/core/refresh
+GET https://api.reserveiviagens.com.br/api/core/csrf
+POST https://api.reserveiviagens.com.br/api/core/logout
+GET https://api.reserveiviagens.com.br/api/core/verify
+Usuários:
+POST https://api.reserveiviagens.com.br/api/users
+GET https://api.reserveiviagens.com.br/api/users
+GET https://api.reserveiviagens.com.br/api/users/me
+PUT https://api.reserveiviagens.com.br/api/users/{user_id}
+PUT https://api.reserveiviagens.com.br/api/users/{user_id}/permissions
+Hóspedes (guests):
+POST https://api.reserveiviagens.com.br/api/guests
+GET https://api.reserveiviagens.com.br/api/guests
+GET https://api.reserveiviagens.com.br/api/guests/{guest_id}
+PUT https://api.reserveiviagens.com.br/api/guests/{guest_id}
+DELETE https://api.reserveiviagens.com.br/api/guests/{guest_id}
+Branding/Configurações:
+GET https://api.reserveiviagens.com.br/api/settings/branding
+PUT https://api.reserveiviagens.com.br/api/settings/branding
+POST https://api.reserveiviagens.com.br/api/settings/branding/upload
+DELETE https://api.reserveiviagens.com.br/api/settings/branding/logo
+WebSocket:
+wss://api.reserveiviagens.com.br/ws/notifications
+Operação/Monitoramento
+Statuspage: https://status.reserveiviagens.com.br
+Métricas (protegido): https://api.reserveiviagens.com.br/metrics
+Docs (opcional): https://docs.reserveiviagens.com.br

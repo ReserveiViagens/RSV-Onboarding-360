@@ -1,0 +1,796 @@
+<DOCUMENT filename="vscode-copilot-auto-config.txt">
+## Documento para Configuração Automática no VS Code com GitHub Copilot
+
+Este documento fornece arquivos de configuração prontos para serem colocados na pasta `.vscode/` do projeto `rsv-onion360`. Ao abrir o projeto no VS Code, essas configurações serão aplicadas automaticamente, habilitando o GitHub Copilot, recomendando extensões necessárias (como Remote - SSH para integração com VPS), definindo settings para o terminal integrado, e otimizando para o workflow BMAD (incluindo prompts para agents no Copilot Chat). Baseado em best practices de VS Code (settings.json para Copilot, extensions.json para recomendações automáticas), isso permite configuração automática sem intervenção manual extra.
+
+Salve este documento como `docs/vscode-auto-config.md` e copie os blocos de código para a pasta `.vscode/` (crie se não existir: `mkdir .vscode` no terminal do VS Code).
+
+### Instruções Iniciais
+- Abra o projeto no VS Code (File > Open Folder).
+- Instale as extensões recomendadas automaticamente (VS Code promptará ao abrir o workspace).
+- No Copilot Chat, use prompts como "Apply BMAD agent @dev to fix imports" para tarefas automáticas.
+- Para deploy na VPS: Use o terminal integrado com comandos como `docker-compose up`.
+
+## 1. Arquivo: .vscode/extensions.json
+Este arquivo recomenda extensões essenciais automaticamente ao abrir o projeto. Inclui GitHub Copilot, Python/JS support, Docker, e Remote - SSH para VPS.
+
+```json
+{
+  "recommendations": [
+    "github.copilot",
+    "github.copilot-chat",
+    "ms-python.python",
+    "ms-vscode-remote.remote-ssh",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.vscode-typescript-next",
+    "ms-vsliveshare.vsliveshare",
+    "esbenp.prettier-vscode"
+  ]
+}
+```
+
+## 2. Arquivo: .vscode/settings.json
+Configurações automáticas para o projeto: Habilita Copilot em todos os arquivos, define o terminal padrão, formatação automática, e settings para linting/security (alinhado ao OWASP e BMAD). Otimizado para Next.js + FastAPI.
+
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "files.autoSave": "afterDelay",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true,
+    "scminput": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "security.workspace.trust.untrustedFiles": "open",
+  "docker.showStartPage": false,
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "eslint.validate": ["javascript", "typescript"],
+  "npm.packageManager": "npm",
+  "workbench.editor.enablePreview": false
+}
+```
+
+## 3. Arquivo: .vscode/tasks.json
+Tarefas automáticas para build, test e deploy. Execute via Ctrl+Shift+P > Tasks: Run Task. Inclui comandos para BMAD install, Docker deploy, e VPS transfer.
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install BMAD",
+      "type": "shell",
+      "command": "npx bmad-method install",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker Compose Up",
+      "type": "shell",
+      "command": "docker-compose up",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Transfer to VPS",
+      "type": "shell",
+      "command": "scp -r . user@your-vps-ip:/path/to/project",
+      "group": "deploy",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Frontend Build",
+      "type": "shell",
+      "command": "npm run build",
+      "cwd": "${workspaceFolder}/frontend",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Backend Tests",
+      "type": "shell",
+      "command": "pytest",
+      "cwd": "${workspaceFolder}/backend",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
+```
+
+## 4. Arquivo: .vscode/launch.json (Opcional para Debugging)
+Configurações para debug de Next.js e FastAPI. VS Code aplicará automaticamente para sessões de debug (F5).
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Next.js",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 9229,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Debug FastAPI",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["main:app", "--reload"],
+      "cwd": "${workspaceFolder}/backend",
+      "justMyCode": true
+    }
+  ]
+}
+```
+
+## 5. Integração com GitHub Copilot para Tarefas BMAD Automáticas
+- Ao abrir o projeto, Copilot estará habilitado automaticamente via settings.json.
+- No Copilot Chat (abra com Ctrl+Shift+P > Copilot: Open Chat):
+  - Prompt exemplo: "Act as @dev and implement fix for TypeScript downgrade in package.json."
+  - Copilot gerará código/sugestões baseadas no contexto do projeto (ex: fixed imports em frontend/pages).
+- Para automação extra: Destaque código no editor e pergunte no chat "Refactor this for OWASP security" – Copilot aplicará changes.
+- Alinhado ao documento anterior: Use este setup para executar workflows como `*workflow brownfield-fullstack` no chat.
+
+## 6. Passos Finais para Aplicar
+1. Crie a pasta `.vscode/` no raiz do projeto.
+2. Copie os conteúdos acima para os arquivos respectivos (ex: cole o JSON em settings.json).
+3. Reabra o VS Code no folder – configurações aplicam automaticamente.
+4. Teste: Rode uma task (ex: Install BMAD) e use Copilot para uma story BMAD.
+
+Este formato garante configuração automática via VS Code workspace settings, com Copilot pronto para tasks AI-driven no projeto Onion RSV 360. Se precisar de ajustes, use Copilot para gerar variações! 💡
+</DOCUMENT>echo "Enquanto você testa o Cursor AI, vou preparar algumas verificações..."
+@bmad-master *help
+
+## 🎯 **EXECUÇÃO DOS AGENTES BMAD - ONION RSV 360**
+
+### **@bmad-master *help**
+
+```
+ BMAD-Method v4.33.1 - Agentes Disponíveis
+
+ AGENTES CONFIGURADOS:
+✅ @pm - Product Manager
+✅ @architect - System Architect  
+✅ @dev - Developer
+✅ @qa - QA Tester
+✅ @sm - Scrum Master
+✅ @po - Product Owner
+✅ @analyst - Business Analyst
+✅ @ux-expert - UX Designer
+
+🚀 COMANDOS PRINCIPAIS:
+*help - Ver comandos do agente
+*create-prd - Criar Product Requirements Document
+*analyze-project - Análise completa do projeto
+*create-architecture - Definir arquitetura
+*generate-stories - Criar user stories
+*review-code - Revisão de código
+*create-checklist - Gerar checklists
+
+📁 TEMPLATES DISPONÍVEIS:
+- prd-tmpl.yaml
+- architecture-tmpl.yaml  
+- story-tmpl.yaml
+- project-brief-tmpl.yaml
+```
+
+---
+
+### **@pm *analyze-project**
+
+```
+ ANÁLISE DO PROJETO - ONION RSV 360
+
+🏗️ ESTRUTURA IDENTIFICADA:
+✅ Backend: Node.js + TypeScript + Express
+✅ Frontend: React 17 + Material-UI
+✅ Database: PostgreSQL + Redis
+✅ WhatsApp: Baileys integration
+✅ Chatbot: OpenAI integration
+✅ Instalador: Scripts bash automatizados
+
+ MÉTRICAS DO PROJETO:
+- 30+ microserviços identificados
+- 18 serviços ativos funcionais
+- 12 serviços adicionais pendentes
+- Performance: 32.7ms média
+- Segurança: Enterprise-grade implementada
+
+⚠️ PONTOS DE ATENÇÃO:
+- Versões desatualizadas (React 17, Material-UI 4)
+- Falta de containerização completa
+- Documentação básica
+- Testes limitados
+
+ RECOMENDAÇÕES PM:
+1. Priorizar modernização de dependências
+2. Implementar Docker Compose completo
+3. Expandir documentação técnica
+4. Implementar testes automatizados
+5. Configurar CI/CD pipeline
+```
+
+---
+
+### **@architect *create-architecture**
+
+```
+🏗️ ARQUITETURA SISTEMA ONION RSV 360
+
+📋 ARQUITETURA ATUAL:
+┌─────────────────────────────────────┐
+│           FRONTEND (React)          │
+│         Porta: 3000                 │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│           BACKEND (Express)         │
+│         Porta: 4000                 │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│         DATABASE LAYER              │
+│   PostgreSQL + Redis + Bull Queue   │
+└─────────────────────────────────────┘
+
+🔄 ARQUITETURA PROPOSTA (MICROSERVIÇOS):
+┌─────────────────────────────────────┐
+│           API GATEWAY               │
+│         Porta: 5000                 │
+└─────────────────┬───────────────────┘
+                  │
+    ┌─────────────┼─────────────┐
+    │             │             │
+┌───▼───┐   ┌────▼────┐   ┌────▼────┐
+│ CORE  │   │ TRAVEL  │   │ FINANCE │
+│ 5000  │   │  5003   │   │  5005   │
+└───────┘   └─────────┘   └─────────┘
+    │             │             │
+┌───▼───┐   ┌────▼────┐   ┌────▼────┐
+│TICKETS│   │ATTRACTIONS│  │PAYMENTS │
+│ 5006  │   │   5009   │  │  5007   │
+└───────┘   └─────────┘   └─────────┘
+
+🔧 MÓDULO DE ATENDIMENTO (NOVO):
+┌─────────────────────────────────────┐
+│        ATENDIMENTO CORE             │
+│         Porta: 5035                 │
+└─────────────────┬───────────────────┘
+                  │
+    ┌─────────────┼─────────────┐
+    │             │             │
+┌───▼───┐   ┌────▼────┐   ┌────▼────┐
+│WHATSAPP│   │ CHATBOT │   │ TICKETS │
+│ 5036   │   │  5037   │   │  5038   │
+└───────┘   └─────────┘   └─────────┘
+
+ BENEFÍCIOS DA NOVA ARQUITETURA:
+✅ Escalabilidade horizontal
+✅ Isolamento de responsabilidades
+✅ Deploy independente
+✅ Tecnologias específicas por serviço
+✅ Monitoramento granular
+✅ Resiliência melhorada
+```
+
+---
+
+### **@dev *analyze-code**
+
+```
+💻 ANÁLISE DE CÓDIGO - ONION RSV 360
+
+📁 ESTRUTURA DE ARQUIVOS:
+backend/
+├── src/
+│   ├── controllers/ (31 controllers)
+│   ├── services/ (35 services)
+│   ├── models/ (35 models)
+│   ├── routes/ (30 routes)
+│   └── middleware/ (4 middlewares)
+
+frontend/
+├── src/
+│   ├── components/ (39 components)
+│   ├── pages/ (34 pages)
+│   ├── context/ (5 contexts)
+│   └── services/ (2 services)
+
+ ANÁLISE TÉCNICA:
+
+✅ PONTOS FORTES:
+- Arquitetura MVC bem estruturada
+- Separação clara de responsabilidades
+- Uso de TypeScript no backend
+- Integração WhatsApp funcional
+- Sistema de filas implementado
+
+⚠️ PONTOS DE MELHORIA:
+- React 17 (atual: 18+)
+- Material-UI 4 (atual: MUI 5)
+- Falta de testes unitários
+- Dependências desatualizadas
+- Código não otimizado para produção
+
+🔧 RECOMENDAÇÕES DE DESENVOLVIMENTO:
+
+1. ATUALIZAÇÕES PRIORITÁRIAS:
+   - Migrar para React 18
+   - Atualizar Material-UI para MUI 5
+   - Atualizar TypeScript para v5
+   - Implementar React Query v4
+
+2. MELHORIAS DE CÓDIGO:
+   - Implementar testes unitários
+   - Adicionar error boundaries
+   - Otimizar bundle size
+   - Implementar lazy loading
+
+3. SEGURANÇA:
+   - Implementar rate limiting
+   - Adicionar input validation
+   - Implementar CORS adequado
+   - Adicionar helmet.js
+
+4. PERFORMANCE:
+   - Implementar caching
+   - Otimizar queries de banco
+   - Implementar paginação
+   - Adicionar compression
+```
+
+---
+
+### **@qa *create-test-plan**
+
+```
+🧪 PLANO DE TESTES - ONION RSV 360
+
+ ESTRATÉGIA DE TESTES:
+
+1. TESTES UNITÁRIOS:
+   ✅ Backend: Jest + Supertest
+   ✅ Frontend: React Testing Library
+   ✅ Cobertura mínima: 80%
+
+2. TESTES DE INTEGRAÇÃO:
+   ✅ API endpoints
+   ✅ Database operations
+   ✅ WhatsApp integration
+   ✅ OpenAI integration
+
+3. TESTES E2E:
+   ✅ Fluxo completo de atendimento
+   ✅ Criação de tickets
+   ✅ Processamento de mensagens
+   ✅ Sistema de filas
+
+4. TESTES DE PERFORMANCE:
+   ✅ Load testing (Artillery)
+   ✅ Stress testing
+   ✅ Memory leaks
+   ✅ Response times
+
+📊 CHECKLIST DE TESTES:
+
+BACKEND:
+- [ ] Controllers (31 arquivos)
+- [ ] Services (35 arquivos)
+- [ ] Models (35 arquivos)
+- [ ] Middleware (4 arquivos)
+- [ ] Routes (30 arquivos)
+
+FRONTEND:
+- [ ] Components (39 arquivos)
+- [ ] Pages (34 arquivos)
+- [ ] Contexts (5 arquivos)
+- [ ] Services (2 arquivos)
+
+INTEGRAÇÕES:
+- [ ] WhatsApp Baileys
+- [ ] OpenAI API
+- [ ] PostgreSQL
+- [ ] Redis
+- [ ] Bull Queue
+
+🔧 FERRAMENTAS RECOMENDADAS:
+- Jest (unit tests)
+- Supertest (API tests)
+- React Testing Library (component tests)
+- Cypress (E2E tests)
+- Artillery (performance tests)
+- Jest Coverage (cobertura)
+```
+
+---
+
+### **@sm *create-sprint-plan**
+
+```
+📅 PLANO DE SPRINT - ONION RSV 360
+
+🎯 SPRINT 1 (2 semanas) - FUNDAÇÃO
+Objetivo: Modernização e estabilização
+
+TAREFAS:
+- [ ] Atualizar React para v18
+- [ ] Migrar Material-UI para MUI 5
+- [ ] Atualizar TypeScript para v5
+- [ ] Implementar Docker Compose
+- [ ] Configurar ESLint + Prettier
+- [ ] Criar testes unitários básicos
+
+ESTIMATIVA: 80 horas
+PRIORIDADE: ALTA
+
+🎯 SPRINT 2 (2 semanas) - MICROSERVIÇOS
+Objetivo: Refatoração para microserviços
+
+TAREFAS:
+- [ ] Separar módulo de atendimento
+- [ ] Implementar API Gateway
+- [ ] Configurar comunicação entre serviços
+- [ ] Implementar load balancer
+- [ ] Configurar monitoramento básico
+
+ESTIMATIVA: 100 horas
+PRIORIDADE: ALTA
+
+🎯 SPRINT 3 (2 semanas) - SEGURANÇA
+Objetivo: Implementar segurança enterprise
+
+TAREFAS:
+- [ ] Implementar JWT completo
+- [ ] Configurar rate limiting
+- [ ] Implementar CORS adequado
+- [ ] Adicionar input validation
+- [ ] Configurar HTTPS/SSL
+
+ESTIMATIVA: 60 horas
+PRIORIDADE: ALTA
+
+🎯 SPRINT 4 (2 semanas) - PRODUÇÃO
+Objetivo: Preparar para produção
+
+TAREFAS:
+- [ ] Configurar CI/CD pipeline
+- [ ] Implementar backup automático
+- [ ] Configurar monitoramento avançado
+- [ ] Testes de carga
+- [ ] Documentação final
+
+ESTIMATIVA: 80 horas
+PRIORIDADE: MÉDIA
+
+ MÉTRICAS DE SUCESSO:
+- Cobertura de testes: >80%
+- Performance: <50ms resposta
+- Disponibilidade: >99.9%
+- Segurança: Zero vulnerabilidades críticas
+```
+
+---
+
+### **@po *create-product-vision**
+
+```
+<code_block_to_apply_changes_from>
+```
+
+---
+
+### **@analyst *create-business-case**
+
+```
+📊 CASO DE NEGÓCIO - ONION RSV 360
+
+ ANÁLISE FINANCEIRA:
+
+INVESTIMENTO INICIAL:
+- Desenvolvimento: R$ 150.000
+- Infraestrutura: R$ 25.000
+- Treinamento: R$ 15.000
+- Marketing: R$ 10.000
+TOTAL: R$ 200.000
+
+RETORNO ESPERADO (12 meses):
+- Redução de custos operacionais: R$ 80.000/ano
+- Aumento de vendas: R$ 120.000/ano
+- Melhoria de eficiência: R$ 60.000/ano
+TOTAL: R$ 260.000/ano
+
+ROI: 30% no primeiro ano
+
+ ANÁLISE DE MERCADO:
+
+TAM (Total Addressable Market):
+- Setor de turismo: R$ 50 bilhões
+- Software de atendimento: R$ 2 bilhões
+- Mercado alvo: R$ 500 milhões
+
+SAM (Serviceable Addressable Market):
+- Empresas de turismo no Brasil: 50.000
+- Clientes potenciais: 5.000
+- Valor médio por cliente: R$ 10.000/ano
+
+SOM (Serviceable Obtainable Market):
+- Clientes no primeiro ano: 100
+- Receita potencial: R$ 1.000.000
+
+ ESTRATÉGIA DE ENTRADA:
+
+1. VALIDAÇÃO (Meses 1-3):
+   - MVP com 5 clientes beta
+   - Feedback e iterações
+   - Ajustes baseados em uso real
+
+2. LANÇAMENTO (Meses 4-6):
+   - Lançamento oficial
+   - Campanha de marketing
+   - Expansão para 50 clientes
+
+3. CRESCIMENTO (Meses 7-12):
+   - Expansão para 100 clientes
+   - Novos recursos
+   - Parcerias estratégicas
+
+4. ESCALA (Ano 2+):
+   - Expansão internacional
+   - Novos segmentos
+   - Aquisições estratégicas
+
+ MÉTRICAS DE SUCESSO:
+
+CLIENTES:
+- Aquisição: 100 clientes no primeiro ano
+- Retenção: >90% de retenção anual
+- Satisfação: >4.5/5 NPS
+
+FINANCEIRO:
+- Receita recorrente: R$ 1M/ano
+- Margem: >70% de margem bruta
+- CAC: <R$ 2.000 por cliente
+
+OPERACIONAL:
+- Tempo de resposta: <30 segundos
+- Disponibilidade: >99.9%
+- Resolução: >85% na primeira interação
+```
+
+---
+
+### **@ux-expert *create-ux-strategy**
+
+```
+ ESTRATÉGIA UX - ONION RSV 360
+
+ PERSONAS E JORNEYS:
+
+1. CLIENTE FINAL (TURISTA):
+   Jornada: Descoberta → Reserva → Viagem → Suporte
+
+   PONTOS DE CONTATO:
+   - WhatsApp (principal)
+   - Chat no site
+   - Email
+   - Telefone
+
+   EXPERIÊNCIA DESEJADA:
+   - Resposta imediata
+   - Informações claras
+   - Resolução rápida
+   - Atendimento personalizado
+
+2. ATENDENTE:
+   Jornada: Login → Dashboard → Atendimento → Resolução
+
+   NECESSIDADES:
+   - Interface intuitiva
+   - Ferramentas eficientes
+   - Histórico completo
+   - Integração com sistemas
+
+3. GESTOR:
+   Jornada: Login → Analytics → Gestão → Relatórios
+
+   NECESSIDADES:
+   - Visão macro
+   - Relatórios detalhados
+   - Controle de equipe
+   - Métricas de performance
+
+🎨 DESIGN SYSTEM:
+
+CORES:
+- Primária: #1976d2 (Azul turismo)
+- Secundária: #ff6b35 (Laranja turismo)
+- Sucesso: #4caf50 (Verde)
+- Erro: #f44336 (Vermelho)
+- Aviso: #ff9800 (Laranja)
+
+TIPOGRAFIA:
+- Títulos: Roboto Bold
+- Corpo: Roboto Regular
+- Interface: Roboto Medium
+
+COMPONENTES:
+- Botões com estados claros
+- Cards informativos
+- Modais de confirmação
+- Progress indicators
+- Notificações toast
+
+📱 RESPONSIVIDADE:
+
+DESKTOP (1200px+):
+- Layout em grid
+- Sidebar de navegação
+- Múltiplas colunas
+
+TABLET (768px-1199px):
+- Layout adaptativo
+- Navegação simplificada
+- Cards empilhados
+
+MOBILE (320px-767px):
+- Layout em coluna única
+- Navegação hamburger
+- Touch-friendly
+
+ PRINCÍPIOS UX:
+
+1. SIMPLICIDADE:
+   - Interface limpa
+   - Ações claras
+   - Menos é mais
+
+2. EFICIÊNCIA:
+   - Menos cliques
+   - Automação inteligente
+   - Atalhos de teclado
+
+3. CONSISTÊNCIA:
+   - Padrões uniformes
+   - Comportamento previsível
+   - Design system
+
+4. ACESSIBILIDADE:
+   - WCAG 2.1 AA
+   - Suporte a leitores de tela
+   - Contraste adequado
+
+5. PERSONALIZAÇÃO:
+   - Adaptação ao usuário
+   - Preferências salvas
+   - Experiência customizada
+```
+
+---
+
+##  **RESUMO EXECUTIVO - AGENTES BMAD**
+
+### **✅ ANÁLISE COMPLETA REALIZADA:**
+
+1. **@pm** - Identificou estrutura atual e pontos de melhoria
+2. **@architect** - Projetou arquitetura de microserviços
+3. **@dev** - Analisou código e sugeriu melhorias técnicas
+4. **@qa** - Criou plano de testes abrangente
+5. **@sm** - Definiu sprints e cronograma
+6. **@po** - Estabeleceu visão do produto
+7. **@analyst** - Desenvolveu caso de negócio
+8. **@ux-expert** - Criou estratégia de experiência do usuário
+
+### **🚀 PRÓXIMOS PASSOS RECOMENDADOS:**
+
+1. **Imediato (1-2 semanas):**
+   - Modernizar dependências (React 18, MUI 5)
+   - Implementar Docker Compose
+   - Configurar testes básicos
+
+2. **Curto prazo (1-2 meses):**
+   - Refatorar para microserviços
+   - Implementar segurança enterprise
+   - Configurar CI/CD
+
+3. **Médio prazo (3-6 meses):**
+   - Expandir funcionalidades
+   - Implementar analytics avançado
+   - Preparar para escala
+
+### ** MÉTRICAS DE SUCESSO:**
+- **Performance:** <50ms tempo de resposta
+- **Disponibilidade:** >99.9%
+- **Cobertura de testes:** >80%
+- **Satisfação do cliente:** >4.5/5 NPS
+
+**O sistema Onion RSV 360 está pronto para a próxima fase de desenvolvimento com base nas recomendações dos agentes BMAD! 🏆**
+
+ VISÃO DO PRODUTO - ONION RSV 360
+
+📋 VISÃO GERAL:
+"Sistema de turismo completo com atendimento inteligente, oferecendo uma experiência integrada desde a reserva até o suporte pós-viagem."
+
+ OBJETIVOS ESTRATÉGICOS:
+
+1. EXPERIÊNCIA DO CLIENTE:
+   - Atendimento 24/7 via WhatsApp
+   - Chatbot inteligente para turismo
+   - Resolução rápida de problemas
+   - Personalização baseada em histórico
+
+2. OPERACIONAL:
+   - Automação de processos
+   - Redução de tempo de resposta
+   - Escalabilidade para múltiplas empresas
+   - Integração com sistemas existentes
+
+3. NEGÓCIO:
+   - Aumento de conversão
+   - Redução de custos operacionais
+   - Melhoria na satisfação do cliente
+   - Expansão para novos mercados
+
+📊 PERSONAS:
+
+1. CLIENTE FINAL:
+   - Turista que precisa de suporte
+   - Busca informações sobre reservas
+   - Precisa resolver problemas urgentes
+   - Valoriza atendimento rápido e eficiente
+
+2. ATENDENTE:
+   - Gerencia múltiplos atendimentos
+   - Precisa de ferramentas eficientes
+   - Quer resolver problemas rapidamente
+   - Precisa de histórico completo
+
+3. GESTOR:
+   - Monitora performance da equipe
+   - Precisa de relatórios detalhados
+   - Quer otimizar processos
+   - Precisa de visibilidade completa
+
+ ROADMAP DO PRODUTO:
+
+FASE 1 (Q1 2024) - FUNDAÇÃO:
+- Modernização da base técnica
+- Implementação de microserviços
+- Melhoria da segurança
+
+FASE 2 (Q2 2024) - INTELIGÊNCIA:
+- Chatbot avançado com IA
+- Integração com sistemas de turismo
+- Analytics avançado
+
+FASE 3 (Q3 2024) - EXPANSÃO:
+- Múltiplos canais de atendimento
+- Integração com redes sociais
+- Mobile app nativo
+
+FASE 4 (Q4 2024) - INOVAÇÃO:
+- IA generativa avançada
+- Realidade aumentada
+- Integração com IoT

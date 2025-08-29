@@ -16,7 +16,7 @@ import {
     CheckCheck,
     Archive,
     Trash,
-    Block,
+    Blocks,
     Star,
     Edit,
     Reply,

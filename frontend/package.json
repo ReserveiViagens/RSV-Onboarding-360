@@ -7,7 +7,8 @@
     "dev:windows": "set NODE_ENV=development && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@ionic/react": "^7.8.0",
@@ -22,6 +23,8 @@
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.9.0",
+    "@playwright/test": "^1.48.2",
     "@types/next": "^8.0.7",
     "@types/node": "^24.0.15",
     "@types/react": "^19.1.8",

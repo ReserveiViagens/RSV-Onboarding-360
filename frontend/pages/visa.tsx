@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useRouter } from 'next/router';
 import { 
-  Passport, 
+  FileText, 
   Clock, 
   CheckCircle, 
   XCircle, 
@@ -18,7 +18,6 @@ import {
   Calendar,
   MapPin,
   User,
-  FileText,
   CreditCard,
   Mail,
   Phone,
@@ -264,7 +263,7 @@ export default function VisaPage() {
                 </button>
                 <div className="flex items-center">
                   <div className="p-2 bg-green-100 rounded-lg mr-3">
-                    <Passport className="h-6 w-6 text-green-600" />
+                                            <FileText className="h-6 w-6 text-green-600" />
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold text-gray-900">Processamento de Vistos</h1>

@@ -28,7 +28,6 @@ import {
   Key,
   Database,
   Server,
-  Cloud,
   Zap,
   Target,
   Award,
@@ -53,11 +52,9 @@ import {
   Bus,
   Ship,
   Bike,
-  Walk,
   Home,
   Building,
   Hotel,
-  Restaurant,
   Coffee,
   ShoppingBag,
   Camera,
@@ -67,20 +64,6 @@ import {
   Smile,
   Frown,
   Meh,
-  Grin,
-  Wink,
-  Wink2,
-  Tongue,
-  Tongue2,
-  Disappointed,
-  Confused,
-  Astonished,
-  Flushed,
-  Sunglasses,
-  Dizzy,
-  Expressionless,
-  NoMouth,
-  Mask,
   Thermometer,
   Droplet,
   Umbrella,
@@ -94,7 +77,6 @@ import {
   CloudDrizzle,
   CloudFog,
   Wind,
-  Hurricane,
   Tornado,
   Snowflake,
   ThermometerSun,
@@ -128,7 +110,7 @@ interface Route {
   destination: string;
   distance: number;
   duration: number;
-  transportMode: 'car' | 'plane' | 'train' | 'bus' | 'ship' | 'bike' | 'walk';
+  transportMode: 'car' | 'plane' | 'train' | 'bus' | 'ship' | 'bike';
   cost: number;
   carbonFootprint: number;
   routeType: 'fastest' | 'shortest' | 'cheapest' | 'eco-friendly';
@@ -247,8 +229,7 @@ const MapsPage: React.FC = () => {
     train: Train,
     bus: Bus,
     ship: Ship,
-    bike: Bike,
-    walk: Walk
+    bike: Bike
   };
 
   const filteredLocations = locations.filter(location => {
@@ -578,8 +559,7 @@ const MapsPage: React.FC = () => {
                                 {route.transportMode === 'train' && 'Trem'}
                                 {route.transportMode === 'bus' && 'Ônibus'}
                                 {route.transportMode === 'ship' && 'Navio'}
-                                {route.transportMode === 'bike' && 'Bicicleta'}
-                                {route.transportMode === 'walk' && 'Caminhada'}
+                                                                {route.transportMode === 'bike' && 'Bicicleta'}
                               </span>
                             </div>
                           </td>
@@ -841,7 +821,6 @@ const MapsPage: React.FC = () => {
                           {selectedRoute.transportMode === 'bus' && 'Ônibus'}
                           {selectedRoute.transportMode === 'ship' && 'Navio'}
                           {selectedRoute.transportMode === 'bike' && 'Bicicleta'}
-                          {selectedRoute.transportMode === 'walk' && 'Caminhada'}
                         </span>
                       </div>
                       <div className="flex justify-between">

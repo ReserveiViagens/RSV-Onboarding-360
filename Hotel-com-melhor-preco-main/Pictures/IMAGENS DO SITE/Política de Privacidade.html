@@ -1,0 +1,167 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #003580;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .contact-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f0f4f8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Política de Privacidade</h1>
+        <p>Estamos comprometidos em proteger sua privacidade. Esta Política de Privacidade explica, de forma clara e transparente, como coletamos, usamos, compartilhamos e protegemos seus dados pessoais. Também detalhamos seus direitos em relação a esses dados e como você pode entrar em contato conosco. Valorizamos a confiança que você deposita em nós ao usar nossos serviços, e nossa prioridade é garantir a segurança e a confidencialidade das suas informações.</p>
+        <p>Por favor, leia também nossa <a href="/politica-de-cookies">Política de Cookies</a>, que explica como usamos cookies e tecnologias semelhantes.</p>
+
+        <h2>1. Quem Somos</h2>
+        <p>Somos Reservei Viagens, uma plataforma online que oferece serviços de reservas de hospedagem, aluguel de carros, passagens aéreas e outros serviços de viagem. Operamos por meio de nosso site <a href="https://www.reserveiviagens.com.br">https://www.reserveiviagens.com.br</a> e aplicativos móveis, além de outras plataformas, como redes sociais e sites parceiros. Esta política se aplica a todas as nossas plataformas, exceto quando indicado de forma diferente.</p>
+
+        <h2>2. Dados que Coletamos</h2>
+        <p>Coletamos diferentes tipos de dados pessoais para oferecer nossos serviços, melhorar sua experiência e cumprir obrigações legais. Esses dados incluem:</p>
+        <ul>
+            <li><strong>Dados fornecidos por você:</strong> Nome, endereço de e-mail, número de telefone, dados de pagamento, datas de viagem, preferências de hospedagem e outras informações fornecidas ao fazer uma reserva ou criar uma conta.</li>
+            <li><strong>Dados coletados automaticamente:</strong> Endereço IP, tipo de dispositivo, sistema operacional, navegador, idioma, páginas visitadas, cliques e tempo de acesso. Usamos cookies e tecnologias semelhantes para coletar essas informações (consulte nossa Política de Cookies).</li>
+            <li><strong>Dados de terceiros:</strong> Informações fornecidas por parceiros, como prestadores de serviços de viagem, ou obtidas de fontes públicas, quando permitido por lei.</li>
+        </ul>
+        <p>Você é responsável por garantir que as pessoas cujos dados pessoais você fornece (por exemplo, outros hóspedes em uma reserva) estejam cientes disso e compreendam como usamos esses dados, conforme descrito nesta política.</p>
+
+        <h2>3. Como Usamos Seus Dados</h2>
+        <p>Usamos seus dados pessoais para os seguintes propósitos:</p>
+        <ul>
+            <li><strong>Prestação de serviços:</strong> Processar reservas, gerenciar pagamentos, enviar confirmações e comunicar detalhes sobre sua viagem.</li>
+            <li><strong>Personalização:</strong> Oferecer recomendações personalizadas, como sugestões de destinos ou promoções, com base nas suas preferências e histórico de navegação.</li>
+            <li><strong>Melhoria dos serviços:</strong> Analisar o uso da plataforma para identificar tendências, corrigir problemas e otimizar a experiência do usuário, incluindo o uso de inteligência artificial para análise de dados.</li>
+            <li><strong>Cumprimento de obrigações legais:</strong> Atender a requisitos fiscais, regulamentares ou judiciais, incluindo cooperação com autoridades, como a Comissão Europeia, quando aplicável.</li>
+            <li><strong>Prevenção de fraudes:</strong> Detectar e prevenir atividades fraudulentas ou ilegais, compartilhando dados com parceiros, se necessário.</li>
+            <li><strong>Marketing:</strong> Enviar newsletters, promoções e convites para pesquisas, desde que você tenha consentido. Você pode cancelar a inscrição a qualquer momento.</li>
+        </ul>
+
+        <h2>4. Com Quem Compartilhamos Seus Dados</h2>
+        <p>Podemos compartilhar seus dados pessoais com:</p>
+        <ul>
+            <li><strong>Prestadores de serviços de viagem:</strong> Hotéis, locadoras de carros ou companhias aéreas, para processar suas reservas. Esses prestadores têm suas próprias políticas de privacidade, que recomendamos que você leia.</li>
+            <li><strong>Parceiros de negócios:</strong> Plataformas afiliadas ou terceiros que nos ajudam a oferecer serviços, como processadores de pagamento ou ferramentas de análise.</li>
+            <li><strong>Autoridades competentes:</strong> Quando exigido por lei ou para prevenir fraudes e atividades ilegais.</li>
+            <li><strong>Seguradoras:</strong> Em caso de sinistros relacionados à sua reserva.</li>
+        </ul>
+        <p>Seus dados podem ser transferidos para países fora da sua jurisdição, incluindo aqueles com leis de proteção de dados menos rigorosas. Nessas situações, implementamos salvaguardas, como Cláusulas Contratuais Padrão, para garantir a proteção adequada dos seus dados.</p>
+
+        <h2>5. Seus Direitos</h2>
+        <p>Você tem controle sobre seus dados pessoais e pode exercer os seguintes direitos, conforme permitido pela legislação aplicável:</p>
+        <ul>
+            <li>Solicitar uma cópia dos dados pessoais que temos sobre você.</li>
+            <li>Corrigir ou atualizar seus dados pessoais.</li>
+            <li>Solicitar a exclusão, bloqueio ou restrição do processamento dos seus dados em certas situações.</li>
+            <li>Opor-se ao uso dos seus dados para fins específicos, como marketing direto.</li>
+            <li>Revogar o consentimento para o processamento de dados, quando baseado em consentimento.</li>
+            <li>Solicitar a transferência dos seus dados para outra organização (portabilidade de dados).</li>
+        </ul>
+        <p>Para exercer esses direitos, entre em contato conosco pelo e-mail comercial@reserveiviagens.com.br. Você também pode registrar uma reclamação junto à sua autoridade local de proteção de dados.</p>
+
+        <h2>6. Segurança dos Dados</h2>
+        <p>Adotamos medidas técnicas e organizacionais robustas para proteger seus dados contra acesso não autorizado, perda ou uso indevido. Isso inclui criptografia, firewalls, autenticação segura e contratos de confidencialidade com prestadores de serviços.</p>
+
+        <h2>7. Retenção de Dados</h2>
+        <p>Retemos seus dados pessoais apenas pelo tempo necessário para cumprir os propósitos descritos nesta política, cumprir obrigações legais ou resolver disputas. Por exemplo, podemos manter dados de reservas para fins fiscais ou para prevenir fraudes. Se você tiver dúvidas sobre períodos de retenção específicos, entre em contato conosco.</p>
+
+        <h2>8. Alterações a Esta Política</h2>
+        <p>Podemos atualizar esta Política de Privacidade periodicamente para refletir mudanças em nossos serviços ou na legislação. Notificaremos você sobre alterações significativas por e-mail ou por meio de um aviso em nosso site antes que entrem em vigor. Recomendamos que você revise esta página regularmente.</p>
+
+        <h2>9. Entre em Contato Conosco</h2>
+        <div class="contact-info">
+            <p>Se você tiver dúvidas, preocupações ou desejar exercer seus direitos, entre em contato com nosso Encarregado de Proteção de Dados:</p>
+            <p><strong>E-mail:</strong> comercial@reserveiviagens.com.br</p>
+            <p><strong>Endereço:</strong> Av. Manoel José de Arruda, Cuiabá, MT / Residencial Primavera 2, Caldas Novas, GO</p>
+            <p><strong>WhatsApp:</strong> (64) 99319-7555</p>
+            <p>Você também pode entrar em contato com a autoridade de proteção de dados da sua região, como a Comissão Nacional de Proteção de Dados (CNPD) no Brasil (www.gov.br/anpd).</p>
+        </div>
+    </div>
+</body>
+</html>

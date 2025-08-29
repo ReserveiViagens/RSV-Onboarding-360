@@ -53,7 +53,7 @@ import {
   Bus,
   Ship,
   Bike,
-  Walk,
+  Footprints,
   Home,
   Building,
   Hotel,
@@ -248,7 +248,7 @@ const MapsPage: React.FC = () => {
     bus: Bus,
     ship: Ship,
     bike: Bike,
-    walk: Walk
+    walk: Footprints
   };
 
   const filteredLocations = locations.filter(location => {

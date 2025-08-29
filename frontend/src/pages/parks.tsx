@@ -91,7 +91,8 @@ export default function ParksPage() {
             bestTime: "ManhÃ£",
             facilities: ["Trilhas", "Banheiros", "Restaurante", "Estacionamento"],
             restrictions: ["NÃ£o Ã© permitido fumar"],
-            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"]
+            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"],
+            videos: []
         },
         {
             id: 2,
@@ -132,7 +133,8 @@ export default function ParksPage() {
             bestTime: "ManhÃ£",
             facilities: ["Passeios", "Banheiros", "Restaurante", "Guia"],
             restrictions: ["NÃ£o Ã© permitido acampar"],
-            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"]
+            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"],
+            videos: []
         },
         {
             id: 4,
@@ -152,7 +154,8 @@ export default function ParksPage() {
             bestTime: "Tarde",
             facilities: ["Trilhas", "Banheiros", "Restaurante", "Camping"],
             restrictions: ["NÃ£o Ã© permitido fumar"],
-            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"]
+            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"],
+            videos: []
         },
         {
             id: 5,
@@ -172,7 +175,8 @@ export default function ParksPage() {
             bestTime: "ManhÃ£",
             facilities: ["Praias", "Banheiros", "Restaurante", "Mergulho"],
             restrictions: ["NÃ£o Ã© permitido pescar"],
-            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"]
+            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"],
+            videos: []
         },
         {
             id: 6,
@@ -192,7 +196,8 @@ export default function ParksPage() {
             bestTime: "ManhÃ£",
             facilities: ["Trilhas", "Banheiros", "Restaurante", "Mirante"],
             restrictions: ["NÃ£o Ã© permitido acampar"],
-            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"]
+            images: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"],
+            videos: []
         }
     ];
 
@@ -1189,7 +1194,6 @@ export default function ParksPage() {
                                     <div key={index} className="relative group">
                                         <video
                                             src={video}
-                                            alt={`${selectedPark.name} - VÃ­deo ${index + 1}`}
                                             className="w-full h-32 object-cover rounded-lg cursor-pointer"
                                             onClick={() => setSelectedVideo(video)}
                                         />

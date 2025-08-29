@@ -1410,7 +1410,7 @@ const UserForm: React.FC<UserFormProps> = ({ type, onSubmit, onCancel, isEditing
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
             [name]: type === 'number' ? parseFloat(value) : value
         }));

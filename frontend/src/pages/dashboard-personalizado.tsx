@@ -155,7 +155,7 @@ const DashboardPersonalizado: React.FC = () => {
               Dashboard Personalizado
             </h1>
             <p className="text-gray-600">
-              Bem-vindo, {user?.name}! Aqui estão suas informações personalizadas.
+              Bem-vindo, {user?.full_name}! Aqui estão suas informações personalizadas.
             </p>
           </div>
           

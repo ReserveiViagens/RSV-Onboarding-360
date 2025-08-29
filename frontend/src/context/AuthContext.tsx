@@ -5,6 +5,9 @@ interface User {
   id: number;
   email: string;
   full_name: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
   is_active: boolean;
   permissions: string[];
   created_at: string;
@@ -196,6 +199,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           id: 2,
           email: 'admin@onionrsv.com',
           full_name: 'Administrador',
+          firstName: 'Administrador',
+          lastName: 'RSV',
+          role: 'admin',
           is_active: true,
           permissions: ['admin'],
           created_at: new Date().toISOString(),
@@ -337,7 +343,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     register,
     isLoading,
     isAuthenticated: !!user,
-    refreshToken: refreshAccessToken,
+    refreshToken: () => refreshToken ? refreshAccessToken(refreshToken) : Promise.resolve(),
     updateUser,
     changePassword,
   };

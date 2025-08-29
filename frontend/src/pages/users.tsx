@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
     Users, 
     UserPlus, 
-    UserEdit, 
     UserX, 
     Search, 
     Filter, 
@@ -33,7 +32,8 @@ import {
     CreditCard, 
     Bell, 
     Globe, 
-    Building
+    Building,
+    Edit
 } from 'lucide-react';
 
 interface User {
@@ -276,7 +276,7 @@ export default function UsersPage() {
                                                             <Eye className="h-4 w-4" />
                                                         </button>
                                                         <button className="text-green-600 hover:text-green-900">
-                                                            <UserEdit className="h-4 w-4" />
+                                                            <Edit className="h-4 w-4" />
                                                         </button>
                                                         <button className="text-red-600 hover:text-red-900">
                                                             <UserX className="h-4 w-4" />

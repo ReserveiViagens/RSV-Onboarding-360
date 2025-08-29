@@ -53,20 +53,13 @@ import {
   Users,
   UserPlus,
   UserX,
-  UserEdit,
   UserCog,
-  UserShield,
   UserMinus,
   UserSearch,
-  UserList,
   UserCheck2,
   UserX2,
-  UserEdit2,
   UserCog2,
-  UserShield2,
-  UserMinus2,
-  UserSearch2,
-  UserList2
+  UserMinus2
 } from 'lucide-react';
 import NavigationButtons from '../components/NavigationButtons';
 

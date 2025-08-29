@@ -32,7 +32,11 @@ interface Attraction {
     visitors: number;
     image?: string;
     category: string;
-    contact: string;
+    contact: {
+        phone: string;
+        email: string;
+        website: string;
+    };
     website: string;
     openingHours: string;
     bestTime: string;
@@ -40,6 +44,18 @@ interface Attraction {
     restrictions: string[];
     images: string[];
     videos: string[];
+    status?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    amenities?: string[];
+    dailyVisitors?: number;
+    weeklyVisitors?: number;
+    monthlyVisitors?: number;
+    annualVisitors?: number;
+    dailyRevenue?: number;
+    weeklyRevenue?: number;
+    monthlyRevenue?: number;
+    annualRevenue?: number;
 }
 
 export default function AttractionsPage() {
@@ -86,6 +102,9 @@ export default function AttractionsPage() {
                 email: "info@cristoredentor.com",
                 website: "www.cristoredentor.com"
             },
+            website: "www.cristoredentor.com",
+            openingHours: "08:00 - 19:00",
+            bestTime: "Manhã cedo ou fim da tarde",
             status: "active",
             createdAt: "2024-01-15",
             updatedAt: "2024-01-20"
@@ -110,6 +129,9 @@ export default function AttractionsPage() {
                 email: "info@paodeacucar.com",
                 website: "www.paodeacucar.com"
             },
+            website: "www.paodeacucar.com",
+            openingHours: "08:30 - 19:30",
+            bestTime: "Manhã ou fim da tarde",
             status: "active",
             createdAt: "2024-01-10",
             updatedAt: "2024-01-18"
@@ -134,6 +156,9 @@ export default function AttractionsPage() {
                 email: "info@cataratasdoiguacu.com",
                 website: "www.cataratasdoiguacu.com"
             },
+            website: "www.cataratasdoiguacu.com",
+            openingHours: "09:00 - 17:00",
+            bestTime: "Manhã para evitar multidões",
             status: "active",
             createdAt: "2024-01-05",
             updatedAt: "2024-01-12"
@@ -287,13 +312,14 @@ export default function AttractionsPage() {
                 duration: attractionData.duration || '',
                 visitors: attractionData.visitors || 0,
                 category: attractionData.category || '',
-                contact: attractionData.contact || '',
+                contact: attractionData.contact || { phone: '', email: '', website: '' },
                 website: attractionData.website || '',
                 openingHours: attractionData.openingHours || '',
                 bestTime: attractionData.bestTime || '',
                 facilities: attractionData.facilities || [],
                 restrictions: attractionData.restrictions || [],
-                images: []
+                images: [],
+                videos: []
             };
             
             setAttractions(prev => [...prev, newAttraction]);
@@ -1113,7 +1139,7 @@ const AttractionForm: React.FC<AttractionFormProps> = ({ onSubmit, onCancel, isE
         duration: initialData?.duration || '',
         visitors: initialData?.visitors || 0,
         category: initialData?.category || '',
-        contact: initialData?.contact || '',
+        contact: initialData?.contact || { phone: '', email: '', website: '' },
         website: initialData?.website || '',
         openingHours: initialData?.openingHours || '',
         bestTime: initialData?.bestTime || '',
@@ -1237,13 +1263,30 @@ const AttractionForm: React.FC<AttractionFormProps> = ({ onSubmit, onCancel, isE
                     />
                 </div>
                 <div>
-                    <label htmlFor="contact" className="block text-sm font-medium text-gray-700">Contato</label>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Telefone</label>
                     <input 
-                        type="text" 
-                        id="contact" 
-                        name="contact" 
-                        value={formData.contact}
-                        onChange={handleChange}
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        value={formData.contact.phone}
+                        onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            contact: { ...prev.contact, phone: e.target.value }
+                        }))}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
+                    />
+                </div>
+                <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        value={formData.contact.email}
+                        onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            contact: { ...prev.contact, email: e.target.value }
+                        }))}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
                     />
                 </div>

@@ -1,0 +1,177 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore os melhores passeios em Caldas Novas com a Reservei Viagens, de parques aquáticos a trilhas ecológicas, para uma viagem inesquecível.">
+    <meta name="keywords" content="passeios em Caldas Novas, turismo em Caldas Novas, hotéis Caldas Novas, Reservei Viagens">
+    <meta name="author" content="Reservei Viagens">
+    <meta name="robots" content="index, follow">
+    <title>Os Melhores Passeios em Caldas Novas: Aventure-se Além das Piscinas Termais</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 1.4em;
+            margin-top: 20px;
+        }
+        h4 {
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+        p {
+            margin: 15px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .cta-button:hover {
+            background-color: #218838;
+            text-decoration: none;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Os Melhores Passeios em Caldas Novas: Aventure-se Além das Piscinas Termais</h1>
+        <p>Você acha que Caldas Novas é só sobre piscinas termais? Pense novamente! Esta cidade em Goiás oferece aventuras que vão muito além dos hotéis, com parques, trilhas e cultura local. Mas sem o planejamento certo, você pode ficar preso em passeios monótonos ou lotados. Com a <strong>Reservei Viagens</strong>, você descobre os melhores passeios e hotéis para uma experiência completa, sem a “dor” de perder o que a cidade tem de melhor.</p>
+
+        <h2>Por Que Explorar Caldas Novas Além dos Hotéis?</h2>
+        <p>Caldas Novas é famosa pelas águas quentes, mas limitar-se às piscinas dos resorts é como saborear apenas metade do prato. A cidade combina natureza, diversão e história, com atrações para famílias, casais e aventureiros. Em 2025, os viajantes buscam experiências locais autênticas, e Caldas Novas entrega isso com passeios que surpreendem.</p>
+
+        <h3>A Dor de uma Viagem Monótona</h3>
+        <p>Já passou um dia inteiro no hotel, sentindo que faltou algo? A “dor” de uma viagem previsível é real: filas nos parques aquáticos, falta de variedade ou passeios mal planejados. Sem conhecer as opções, você pode perder o que faz Caldas Novas única.</p>
+
+        <h3>O Prazer de Aventuras Variadas</h3>
+        <p>Imagine combinar um dia relaxante nas águas termais com uma trilha ecológica, um mergulho na história local ou uma tarde de diversão em família. Os passeios em Caldas Novas oferecem esse equilíbrio, e a <em>Reservei Viagens</em> ajuda a planejar tudo com hotéis estrategicamente localizados.</p>
+
+        <h2>Os Melhores Passeios em Caldas Novas</h2>
+        <p>Selecionamos cinco atrações imperdíveis para tornar sua viagem inesquecível. Cada uma oferece uma perspectiva diferente da cidade, e nossos hotéis parceiros facilitam o acesso.</p>
+
+        <h3>1. Hot Park: Diversão para Todas as Idades</h3>
+        <p>O Hot Park, um dos maiores parques aquáticos da América Latina, combina toboáguas radicais, rio lento termal e áreas infantis. Perfeito para famílias, ele exige planejamento para evitar filas. Fique no Prive Riviera, reservado pela <em>Reservei Viagens</em>, que oferece ingressos inclusos em alguns pacotes.</p>
+
+        <h3>2. Parque Estadual da Serra de Caldas: Natureza e Aventura</h3>
+        <p>Para os amantes da natureza, este parque tem trilhas como a do Cascatinha, com cachoeiras refrescantes. É ideal para casais ou grupos que querem um dia ao ar livre. Escolha hotéis próximos, como o Eco Resort Lagoa, para fácil acesso.</p>
+
+        <h3>3. Lago Corumbá: Esportes Aquáticos e Relaxamento</h3>
+        <p>Quer aventura? O Lago Corumbá oferece passeios de lancha, stand-up paddle e até pesca. É uma ótima opção para grupos de amigos. Hotéis como o Di Roma, disponíveis na <em>Reservei Viagens</em>, ficam a poucos minutos do lago.</p>
+
+        <h3>4. Jardim Japonês: Paz e Cultura</h3>
+        <p>Este jardim encantador é perfeito para quem busca tranquilidade. Com pontes, lagos e vegetação inspirada no Japão, é ideal para casais ou viajantes solo. Combine com uma estadia no Hot Springs Hotel, que oferece traslado para atrações culturais.</p>
+
+        <h3>5. Feira do Luar: Sabores e Artesanato</h3>
+        <p>À noite, visite a Feira do Luar para provar doces goianos, como pequi cristalizado, e comprar artesanato local. É uma experiência autêntica que apoia a comunidade. Fique em hotéis centrais para curtir a feira sem pressa.</p>
+
+        <h2>Como a Reservei Viagens Torna Seus Passeios Perfeitos</h2>
+        <p>Nossa plataforma facilita o planejamento, conectando você a hotéis próximos às atrações e oferecendo pacotes que incluem ingressos ou traslados. Evite a dor de logística complicada e foque no prazer da aventura.</p>
+
+        <h3>História Real: A Aventura de Sofia</h3>
+        <p>Sofia, uma administradora de 29 anos, planejava uma viagem em família para Caldas Novas, mas temia ficar só no hotel. Usando a <em>Reservei Viagens</em>, ela reservou o Prive Riviera, que incluía ingressos para o Hot Park, e organizou uma trilha no Parque Estadual. “As crianças se divertiram, e nós adultos adoramos a natureza. Foi muito mais do que esperávamos”, diz Sofia.</p>
+
+        <h2>Dicas para Aproveitar os Passeios</h2>
+        <p>Maximize sua experiência com estas dicas:</p>
+        <ol>
+            <li><strong>Reserve hotéis com pacotes</strong>: Escolha opções na <em>Reservei Viagens</em> que incluem ingressos para o Hot Park ou traslados.</li>
+            <li><strong>Planeje os horários</strong>: Visite parques aquáticos cedo para evitar multidões.</li>
+            <li><strong>Leve proteção</strong>: Use protetor solar e calçados confortáveis para trilhas.</li>
+            <li><strong>Explore à noite</strong>: A Feira do Luar é mais animada após o pôr do sol.</li>
+        </ol>
+
+        <h2>Monte Seu Roteiro Personalizado</h2>
+        <p>Quer um roteiro sob medida? Faça nosso quiz interativo no site da <em>Reservei Viagens</em>! Responda sobre seu estilo de viagem (aventura, relaxamento, cultura) e receba sugestões de passeios e hotéis.</p>
+
+        <h2>Comece Sua Aventura em Caldas Novas!</h2>
+        <p>Caldas Novas é mais do que águas termais — é um destino cheio de vida e possibilidades. Não caia na monotonia de uma viagem comum. Com a <em>Reservei Viagens</em>, você planeja passeios incríveis e encontra o hotel perfeito para sua aventura.</p>
+        <a href="https://reserveiviagens.com.br" class="cta-button">Reserve Sua Viagem Agora</a>
+    </div>
+</body>
+</html>

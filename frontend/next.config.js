@@ -2,6 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
   
+  // Correção de Watchpack warnings
+  experimental: {
+    watchOptions: {
+      ignored: ['**/node_modules/**', '**/.git/**', '**/DumpStack.log.tmp', '**/pagefile.sys']
+    }
+  },
+  
   // Configuração do diretório de páginas
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   

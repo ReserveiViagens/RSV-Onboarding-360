@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Users, 
     UserPlus, 
-    UserEdit, 
+    UserCog, 
     UserX, 
     Search, 
     Filter, 
@@ -276,7 +276,7 @@ export default function UsersPage() {
                                                             <Eye className="h-4 w-4" />
                                                         </button>
                                                         <button className="text-green-600 hover:text-green-900">
-                                                            <UserEdit className="h-4 w-4" />
+                                                            <UserCog className="h-4 w-4" />
                                                         </button>
                                                         <button className="text-red-600 hover:text-red-900">
                                                             <UserX className="h-4 w-4" />

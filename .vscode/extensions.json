@@ -1,9 +1,10 @@
-﻿{
+{
   "recommendations": [
     "github.copilot",
     "ms-python.python",
     "ms-vscode-remote.remote-ssh",
     "ms-azuretools.vscode-docker",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "ms-python.vscode-python-envs"
   ]
 }

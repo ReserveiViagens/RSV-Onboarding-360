@@ -20,7 +20,7 @@ export default function ProtectedRoute({
     </div>
   )
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, hasPermission } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -38,8 +38,8 @@ export default function ProtectedRoute({
   }
 
   // Verificar permissões específicas
-  if (requiredPermissions.length > 0) {
-    const hasAllPermissions = requiredPermissions.every(permission => hasPermission(permission));
+  if (requiredPermissions.length > 0 && user) {
+    const hasAllPermissions = requiredPermissions.every(permission => user.permissions.includes(permission));
     if (!hasAllPermissions) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">

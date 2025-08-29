@@ -6,7 +6,7 @@ import {
   Workflow,
   Play,
   Pause,
-  Stop,
+  Square,
   RefreshCw,
   CheckCircle,
   XCircle,
@@ -343,7 +343,7 @@ export default function WorkflowsPage() {
     { id: 'overview', name: 'Visão Geral', icon: BarChart3 },
     { id: 'active', name: 'Ativos', icon: Play },
     { id: 'paused', name: 'Pausados', icon: Pause },
-    { id: 'stopped', name: 'Parados', icon: Stop },
+    { id: 'stopped', name: 'Parados', icon: Square },
     { id: 'draft', name: 'Rascunhos', icon: FileText }
   ];
 
@@ -570,7 +570,7 @@ export default function WorkflowsPage() {
                   onClick={() => handleQuickAction('stop')}
                   className="flex items-center p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
                 >
-                  <Stop className="w-5 h-5 text-red-600 mr-2" />
+                                          <Square className="w-5 h-5 text-red-600 mr-2" />
                   <span className="text-sm font-medium text-red-700">Parar</span>
                 </button>
                 <button
@@ -674,7 +674,7 @@ export default function WorkflowsPage() {
                               <Pause className="h-4 w-4" />
                             </button>
                             <button className="text-red-600 hover:text-red-900">
-                              <Stop className="h-4 w-4" />
+                              <Square className="h-4 w-4" />
                             </button>
                           </div>
                         </td>

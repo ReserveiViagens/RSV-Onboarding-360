@@ -1,0 +1,162 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Reserve o Diroma Fiori em Caldas Novas com a Reservei Viagens! Aproveite piscinas termais, conforto para até 8 pessoas e localização privilegiada. Faça sua reserva agora!">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Diroma Fiori em Caldas Novas: Piscinas Termais e Conforto">
+    <meta property="og:description" content="Descubra o Diroma Fiori em Caldas Novas com a Reservei Viagens. Apartamentos espaçosos, piscinas termais e lazer para toda a família. Reserve hoje!">
+    <meta property="og:image" content="https://www.reserveiviagens.com.br/images/diroma-fiori-piscina.jpg">
+    <meta property="og:url" content="https://www.reserveiviagens.com.br/hotel/diroma-fiori-caldas-novas">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Diroma Fiori em Caldas Novas: Piscinas Termais e Conforto">
+    <meta name="twitter:description" content="Descubra o Diroma Fiori em Caldas Novas com a Reservei Viagens. Apartamentos espaçosos, piscinas termais e lazer para toda a família. Reserve hoje!">
+    <meta name="twitter:image" content="https://www.reserveiviagens.com.br/images/diroma-fiori-piscina.jpg">
+    <link rel="canonical" href="https://www.reserveiviagens.com.br/hotel/diroma-fiori-caldas-novas">
+    <title>Diroma Fiori em Caldas Novas: Reserve Sua Estadia com Piscinas Termais e Conforto Incomparável</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3, h4 {
+            color: #003580;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        h4 {
+            font-size: 16px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #003580;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .breadcrumbs {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .breadcrumbs a {
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="https://www.reserveiviagens.com.br">Início</a> &gt; <a href="https://www.reserveiviagens.com.br/hoteis-caldas-novas">Hotéis em Caldas Novas</a> &gt; Diroma Fiori
+        </div>
+        <h1>Diroma Fiori em Caldas Novas: Reserve Sua Estadia com Piscinas Termais e Conforto Incomparável</h1>
+        <p>Descubra o <strong>Diroma Fiori</strong>, um refúgio perfeito para quem busca relaxamento e diversão em <strong>Caldas Novas, Goiás</strong>. Localizado a apenas 1,1 km do Acqua Park Di Roma, este apartamento completo oferece <strong>piscinas termais</strong>, sauna, academia e um ambiente familiar que encanta viajantes de <strong>Goiás</strong>, <strong>Brasília</strong>, <strong>Uberlândia</strong>, <strong>Cuiabá</strong> e <strong>Várzea Grande</strong>. Com <strong>avaliação 7.8/10</strong> baseada em 87 avaliações, o Diroma Fiori é a escolha ideal para casais, famílias e grupos que sonham com uma experiência inesquecível.</p>
+        
+        <h2>Por que Escolher o Diroma Fiori para Sua Viagem?</h2>
+        <p>Imagine-se relaxando em <strong>piscinas de águas quentes</strong> com temperaturas perfeitas, nem muito quentes, nem frias, como destacam os hóspedes. O <strong>Diroma Fiori</strong> oferece um apartamento espaçoso com <strong>2 quartos, 5 camas e 2 banheiros</strong>, ideal para até 8 pessoas. A cozinha bem equipada permite preparar refeições com praticidade, enquanto o <strong>Wi-Fi gratuito</strong> mantém você conectado. Além disso, o <strong>estacionamento privativo gratuito</strong> e a <strong>recepção 24 horas</strong> garantem conveniência total.</p>
+        <p>Os hóspedes elogiam a <strong>localização privilegiada</strong>, próxima a restaurantes, padarias e ao centro de Caldas Novas, com nota <strong>9.0</strong> para localização. “A área de lazer é organizada, e o ambiente é tranquilo e familiar. Vou voltar sempre!” – Franciele, hóspede. Aproveite a proximidade com o <a href="https://www.reserveiviagens.com.br/atracoes/acqua-park-di-roma">Acqua Park Di Roma</a> e outras atrações para criar memórias inesquecíveis com sua família.</p>
+        
+        <img src="https://www.reserveiviagens.com.br/images/diroma-fiori-piscina.jpg" alt="Piscina termal do Diroma Fiori em Caldas Novas, ideal para famílias e casais">
+        
+        <h3>Conforto e Lazer para Todos os Gostos</h3>
+        <p>O <strong>Diroma Fiori</strong> é mais do que um lugar para dormir – é uma experiência completa. As <strong>piscinas termais ao ar livre</strong> com bar integrado são perfeitas para relaxar, enquanto as crianças se divertem nos brinquedos aquáticos. “Minha filha amou os brinquedos nas piscinas!” – Kelly, hóspede. A academia e o hammam complementam as opções de bem-estar, e o apartamento é entregue <strong>limpo e organizado</strong>, com camas confortáveis e geladeira grande, como destacado por Robson: “Ótimo ap, igual nas fotos, recomendo!”</p>
+        
+        <h3>Como Reservar com a Reservei Viagens?</h3>
+        <p>Na <strong>Reservei Viagens</strong>, garantimos o melhor preço para sua estadia no <strong>Diroma Fiori</strong>. Nossa plataforma segura facilita a reserva, com <strong>cancelamento flexível</strong> em várias opções e pagamento seguro. Entre em contato pelo <strong>WhatsApp (64) 99319-7555</strong> ou e-mail <strong><a href="mailto:reservas@reserveiviagens.com.br">reservas@reserveiviagens.com.br</a></strong> para dúvidas ou pedidos especiais. <strong>Reserve agora</strong> e viva momentos de puro relaxamento em Caldas Novas!</p>
+        
+        <h4>Dicas para Sua Viagem a Caldas Novas</h4>
+        <ul>
+            <li><strong>Planeje com antecedência</strong>: As datas no Diroma Fiori são muito procuradas, especialmente em feriados. Verifique a disponibilidade cedo!</li>
+            <li><strong>Explore a região</strong>: Visite o <a href="https://www.reserveiviagens.com.br/atracoes/acqua-park-di-roma">Acqua Park Di Roma</a>, o Jardim Japonês e os restaurantes locais próximos ao condomínio.</li>
+            <li><strong>Viaje com conforto</strong>: Leve roupas leves e aproveite as águas termais para relaxar após um dia de passeios.</li>
+        </ul>
+        
+        <h4>Por que Viajar com a Reservei Viagens?</h4>
+        <p>Com <strong>20 anos de experiência</strong> em turismo em Caldas Novas, a Reservei Viagens é sua parceira confiável para encontrar as melhores acomodações. Nosso atendimento 24/7 e preços competitivos garantem uma experiência sem preocupações. <strong>Não perca tempo</strong> – reserve hoje e transforme sua viagem em uma memória eterna!</p>
+        
+        <a href="https://www.reserveiviagens.com.br/reservar/diroma-fiori" class="cta-button">Reserve Agora!</a>
+    </div>
+</body>
+</html>

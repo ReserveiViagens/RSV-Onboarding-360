@@ -39,8 +39,6 @@ import {
   Zap,
   Target,
   Award,
-  ThumbsUp,
-  MessageSquare,
   Bell,
   Lock,
   Unlock,

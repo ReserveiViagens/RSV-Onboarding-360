@@ -969,18 +969,19 @@ export default function ReportsPage() {
     // Simular geração de PDF
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const periodText = {
+    const periodText: Record<string, string> = {
       daily: 'Diário',
       weekly: 'Semanal',
       monthly: 'Mensal',
       annual: 'Anual'
-    }[pdfPeriod as keyof typeof periodText] || 'Geral';
+    };
+    const periodTextValue = periodText[pdfPeriod as keyof typeof periodText] || 'Geral';
     
     const categoryText = pdfCategory === 'all' ? 'Todas as Categorias' : pdfCategory;
     const searchText = pdfSearchTerm ? `_${pdfSearchTerm.replace(/[^a-zA-Z0-9]/g, '')}` : '';
     const dateText = pdfStartDate && pdfEndDate ? `_${pdfStartDate}_${pdfEndDate}` : '';
     
-    const fileName = `relatorio_${selectedReportType}_${periodText.toLowerCase()}_${categoryText.toLowerCase()}${searchText}${dateText}_${new Date().toISOString().split('T')[0]}.pdf`;
+    const fileName = `relatorio_${selectedReportType}_${periodTextValue.toLowerCase()}_${categoryText.toLowerCase()}${searchText}${dateText}_${new Date().toISOString().split('T')[0]}.pdf`;
     
     // Simular download do PDF
     const link = document.createElement('a');
