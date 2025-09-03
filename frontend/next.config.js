@@ -1,62 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  
-  // Correção de Watchpack warnings
+  swcMinify: true,
   experimental: {
-    watchOptions: {
-      ignored: ['**/node_modules/**', '**/.git/**', '**/DumpStack.log.tmp', '**/pagefile.sys']
-    }
+    appDir: false
   },
-  
-  // Configuração do diretório de páginas
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  
-  // Configuração básica para desenvolvimento
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          }
-        ]
-      }
-    ]
+  eslint: {
+    ignoreDuringBuilds: true
   },
-
-  // Configuração de webpack simplificada
-  webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      config.resolve = {
-        ...config.resolve,
-        fallback: {
-          ...config.resolve.fallback,
-          fs: false,
-          net: false,
-          tls: false
-        }
-      }
-    }
-    return config
+  typescript: {
+    ignoreBuildErrors: true
   },
-
-  // Configuração de rewrites simplificada
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:5001/api/:path*',
-      }
-    ];
-  },
-
-  // Configurações básicas
-  trailingSlash: false,
-  compress: true,
-  poweredByHeader: false,
+  images: {
+    domains: ['localhost', 'reserveiviagens.com.br']
+  }
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

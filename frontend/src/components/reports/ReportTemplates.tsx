@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { 
   FileText, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Copy, 
   Eye, 
-  Download,
+  Edit3, 
+  Trash2, 
+  Copy,
+  Star,
   Calendar,
   BarChart3,
   PieChart,
@@ -15,546 +16,488 @@ import {
   DollarSign,
   MapPin,
   Clock,
-  Save
+  Filter,
+  Search,
+  Plus,
+  Grid,
+  List
 } from 'lucide-react';
-import { Card } from '../ui/Card';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { Select } from '../ui/Select';
-import { Modal } from '../ui/Modal';
-import { Badge } from '../ui/Badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/Tabs';
-import { useUIStore } from '../../stores/useUIStore';
+
+// ===================================================================
+// TIPOS E INTERFACES
+// ===================================================================
 
 interface ReportTemplate {
   id: string;
   name: string;
   description: string;
   category: string;
-  icon: string;
-  chartType: 'bar' | 'line' | 'pie' | 'area' | 'table';
-  frequency: 'once' | 'daily' | 'weekly' | 'monthly' | 'quarterly';
-  lastUsed: string;
-  usageCount: number;
+  icon: React.ReactNode;
+  fields: number;
   isDefault: boolean;
-  parameters: {
-    name: string;
-    type: 'text' | 'number' | 'date' | 'select' | 'boolean';
-    required: boolean;
-    options?: string[];
-    defaultValue?: any;
-  }[];
+  isFavorite: boolean;
+  lastUsed?: string;
+  usageCount: number;
+  tags: string[];
 }
 
-interface ReportTemplatesProps {
-  onTemplateSelect?: (template: ReportTemplate) => void;
-  onTemplateEdit?: (template: ReportTemplate) => void;
+interface TemplateCategory {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  count: number;
 }
 
-const ReportTemplates: React.FC<ReportTemplatesProps> = ({ 
-  onTemplateSelect,
-  onTemplateEdit 
-}) => {
-  const [templates, setTemplates] = useState<ReportTemplate[]>([]);
-  const [filteredTemplates, setFilteredTemplates] = useState<ReportTemplate[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+// ===================================================================
+// DADOS MOCK
+// ===================================================================
+
+const categories: TemplateCategory[] = [
+  { id: 'all', name: 'Todos', icon: <Grid className="w-4 h-4" />, count: 12 },
+  { id: 'customer', name: 'Clientes', icon: <Users className="w-4 h-4" />, count: 3 },
+  { id: 'financial', name: 'Financeiro', icon: <DollarSign className="w-4 h-4" />, count: 4 },
+  { id: 'booking', name: 'Reservas', icon: <Calendar className="w-4 h-4" />, count: 3 },
+  { id: 'marketing', name: 'Marketing', icon: <TrendingUp className="w-4 h-4" />, count: 2 }
+];
+
+const reportTemplates: ReportTemplate[] = [
+  {
+    id: 'customer-analysis',
+    name: 'Análise de Clientes',
+    description: 'Relatório completo de análise de clientes, comportamento de compra e satisfação',
+    category: 'customer',
+    icon: <Users className="w-5 h-5" />,
+    fields: 8,
+    isDefault: true,
+    isFavorite: true,
+    lastUsed: '2024-01-20',
+    usageCount: 15,
+    tags: ['clientes', 'análise', 'satisfação']
+  },
+  {
+    id: 'financial-summary',
+    name: 'Resumo Financeiro',
+    description: 'Relatório de receitas, despesas, lucratividade e métricas financeiras',
+    category: 'financial',
+    icon: <DollarSign className="w-5 h-5" />,
+    fields: 12,
+    isDefault: true,
+    isFavorite: false,
+    lastUsed: '2024-01-19',
+    usageCount: 23,
+    tags: ['financeiro', 'receita', 'lucro']
+  },
+  {
+    id: 'booking-analytics',
+    name: 'Analytics de Reservas',
+    description: 'Análise detalhada de reservas, destinos populares e tendências',
+    category: 'booking',
+    icon: <BarChart3 className="w-5 h-5" />,
+    fields: 10,
+    isDefault: true,
+    isFavorite: true,
+    lastUsed: '2024-01-18',
+    usageCount: 18,
+    tags: ['reservas', 'destinos', 'tendências']
+  },
+  {
+    id: 'marketing-performance',
+    name: 'Performance de Marketing',
+    description: 'Métricas de campanhas, conversões e ROI de marketing',
+    category: 'marketing',
+    icon: <TrendingUp className="w-5 h-5" />,
+    fields: 9,
+    isDefault: false,
+    isFavorite: false,
+    lastUsed: '2024-01-17',
+    usageCount: 8,
+    tags: ['marketing', 'campanhas', 'conversão']
+  }
+];
+
+// ===================================================================
+// COMPONENTE PRINCIPAL
+// ===================================================================
+
+const ReportTemplates: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<ReportTemplate | null>(null);
-  const [activeTab, setActiveTab] = useState('all');
-  
-  const { showNotification } = useUIStore();
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
 
-  // Templates padrão do sistema
-  const defaultTemplates: ReportTemplate[] = [
-    {
-      id: 'sales-performance',
-      name: 'Performance de Vendas',
-      description: 'Análise detalhada do desempenho de vendas por período, agente e destino',
-      category: 'Vendas',
-      icon: 'BarChart3',
-      chartType: 'bar',
-      frequency: 'monthly',
-      lastUsed: '2025-01-15',
-      usageCount: 45,
-      isDefault: true,
-      parameters: [
-        { name: 'Período', type: 'select', required: true, options: ['Diário', 'Semanal', 'Mensal', 'Trimestral', 'Anual'] },
-        { name: 'Data Início', type: 'date', required: true },
-        { name: 'Data Fim', type: 'date', required: true },
-        { name: 'Agrupar por', type: 'select', required: false, options: ['Destino', 'Agente', 'Status', 'Cliente'] }
-      ]
-    },
-    {
-      id: 'customer-segmentation',
-      name: 'Segmentação de Clientes',
-      description: 'Análise comportamental e segmentação dos clientes por valor e frequência',
-      category: 'Clientes',
-      icon: 'Users',
-      chartType: 'pie',
-      frequency: 'quarterly',
-      lastUsed: '2025-01-10',
-      usageCount: 23,
-      isDefault: true,
-      parameters: [
-        { name: 'Segmento', type: 'select', required: false, options: ['Novos', 'Recorrentes', 'VIP', 'Inativos'] },
-        { name: 'Mínimo de reservas', type: 'number', required: false, defaultValue: 1 },
-        { name: 'Valor mínimo gasto', type: 'number', required: false, defaultValue: 0 },
-        { name: 'Período de análise', type: 'select', required: true, options: ['6 meses', '1 ano', '2 anos', 'Todo período'] }
-      ]
-    },
-    {
-      id: 'financial-summary',
-      name: 'Resumo Financeiro',
-      description: 'Visão consolidada das receitas, despesas e lucros da agência',
-      category: 'Financeiro',
-      icon: 'DollarSign',
-      chartType: 'line',
-      frequency: 'monthly',
-      lastUsed: '2025-01-20',
-      usageCount: 67,
-      isDefault: true,
-      parameters: [
-        { name: 'Ano', type: 'select', required: true, options: ['2024', '2025', '2026'] },
-        { name: 'Incluir despesas', type: 'boolean', required: false, defaultValue: true },
-        { name: 'Agrupar por mês', type: 'boolean', required: false, defaultValue: true },
-        { name: 'Mostrar comparação', type: 'boolean', required: false, defaultValue: false }
-      ]
-    },
-    {
-      id: 'destination-popularity',
-      name: 'Popularidade dos Destinos',
-      description: 'Ranking dos destinos mais procurados e tendências de viagem',
-      category: 'Destinos',
-      icon: 'MapPin',
-      chartType: 'bar',
-      frequency: 'weekly',
-      lastUsed: '2025-01-18',
-      usageCount: 34,
-      isDefault: true,
-      parameters: [
-        { name: 'Período de análise', type: 'select', required: true, options: ['Última semana', 'Último mês', 'Último trimestre', 'Último ano'] },
-        { name: 'Mínimo de reservas', type: 'number', required: false, defaultValue: 5 },
-        { name: 'Incluir tendências', type: 'boolean', required: false, defaultValue: true },
-        { name: 'Agrupar por região', type: 'boolean', required: false, defaultValue: false }
-      ]
-    },
-    {
-      id: 'agent-performance',
-      name: 'Performance dos Agentes',
-      description: 'Métricas de produtividade e eficiência dos agentes de viagem',
-      category: 'Operacional',
-      icon: 'Users',
-      chartType: 'bar',
-      frequency: 'monthly',
-      lastUsed: '2025-01-12',
-      usageCount: 28,
-      isDefault: true,
-      parameters: [
-        { name: 'Período', type: 'select', required: true, options: ['Mês atual', 'Último mês', 'Último trimestre', 'Último ano'] },
-        { name: 'Métricas', type: 'select', required: true, options: ['Reservas', 'Receita', 'Clientes', 'Combinado'] },
-        { name: 'Filtro por agente', type: 'select', required: false, options: ['Todos', 'Ativos', 'Novos'] },
-        { name: 'Incluir metas', type: 'boolean', required: false, defaultValue: true }
-      ]
-    },
-    {
-      id: 'seasonal-trends',
-      name: 'Tendências Sazonais',
-      description: 'Análise de sazonalidade e padrões de demanda por período do ano',
-      category: 'Marketing',
-      icon: 'TrendingUp',
-      chartType: 'area',
-      frequency: 'quarterly',
-      lastUsed: '2025-01-05',
-      usageCount: 19,
-      isDefault: true,
-      parameters: [
-        { name: 'Ano de análise', type: 'select', required: true, options: ['2024', '2025', '2026'] },
-        { name: 'Destinos', type: 'select', required: false, options: ['Todos', 'Caldas Novas', 'Porto de Galinhas', 'Fernando de Noronha'] },
-        { name: 'Tipo de análise', type: 'select', required: true, options: ['Reservas', 'Receita', 'Clientes', 'Ocupação'] },
-        { name: 'Incluir previsões', type: 'boolean', required: false, defaultValue: false }
-      ]
+  // ===================================================================
+  // FILTROS E ORDENAÇÃO
+  // ===================================================================
+
+  const filteredTemplates = reportTemplates.filter(template => {
+    const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
+    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         template.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFavorites = !favoritesOnly || template.isFavorite;
+    
+    return matchesCategory && matchesSearch && matchesFavorites;
+  });
+
+  // ===================================================================
+  // HANDLERS
+  // ===================================================================
+
+  const handleUseTemplate = (template: ReportTemplate) => {
+    console.log('Usando template:', template.name);
+    alert(`Iniciando relatório com template: ${template.name}`);
+  };
+
+  const handleDuplicateTemplate = (template: ReportTemplate) => {
+    console.log('Duplicando template:', template.name);
+    alert(`Template "${template.name}" duplicado com sucesso!`);
+  };
+
+  const handleToggleFavorite = (templateId: string) => {
+    console.log('Alternando favorito:', templateId);
+  };
+
+  const handleDeleteTemplate = (templateId: string) => {
+    if (confirm('Tem certeza que deseja excluir este template?')) {
+      console.log('Excluindo template:', templateId);
+      alert('Template excluído com sucesso!');
     }
-  ];
-
-  useEffect(() => {
-    setTemplates(defaultTemplates);
-    setFilteredTemplates(defaultTemplates);
-  }, []);
-
-  useEffect(() => {
-    filterTemplates();
-  }, [selectedCategory, searchTerm, templates]);
-
-  const filterTemplates = () => {
-    let filtered = templates;
-
-    // Filtrar por categoria
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(template => template.category === selectedCategory);
-    }
-
-    // Filtrar por termo de busca
-    if (searchTerm) {
-      filtered = filtered.filter(template =>
-        template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        template.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredTemplates(filtered);
   };
 
-  const handleTemplateSelect = (template: ReportTemplate) => {
-    if (onTemplateSelect) {
-      onTemplateSelect(template);
-    }
-    showNotification(`Template "${template.name}" selecionado`, 'success');
-  };
-
-  const handleTemplateEdit = (template: ReportTemplate) => {
-    setEditingTemplate(template);
-    setShowEditModal(true);
-  };
-
-  const handleTemplateCopy = (template: ReportTemplate) => {
-    const copiedTemplate = {
-      ...template,
-      id: `${template.id}-copy-${Date.now()}`,
-      name: `${template.name} (Cópia)`,
-      isDefault: false,
-      usageCount: 0,
-      lastUsed: new Date().toISOString().split('T')[0]
-    };
-
-    setTemplates(prev => [...prev, copiedTemplate]);
-    showNotification('Template copiado com sucesso!', 'success');
-  };
-
-  const handleTemplateDelete = (templateId: string) => {
-    const template = templates.find(t => t.id === templateId);
-    if (template?.isDefault) {
-      showNotification('Não é possível excluir templates padrão do sistema', 'error');
-      return;
-    }
-
-    setTemplates(prev => prev.filter(t => t.id !== templateId));
-    showNotification('Template removido com sucesso!', 'success');
-  };
-
-  const handleSaveTemplate = () => {
-    if (!editingTemplate) return;
-
-    setTemplates(prev => prev.map(t => 
-      t.id === editingTemplate.id ? editingTemplate : t
-    ));
-
-    setShowEditModal(false);
-    setEditingTemplate(null);
-    showNotification('Template atualizado com sucesso!', 'success');
-  };
-
-  const getIconComponent = (iconName: string) => {
-    const iconMap: Record<string, React.ComponentType<any>> = {
-      BarChart3,
-      PieChart,
-      TrendingUp,
-      Users,
-      DollarSign,
-      MapPin,
-      Clock
-    };
-    return iconMap[iconName] || FileText;
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colorMap: Record<string, string> = {
-      'Vendas': 'blue',
-      'Clientes': 'green',
-      'Financeiro': 'purple',
-      'Destinos': 'orange',
-      'Operacional': 'gray',
-      'Marketing': 'pink'
-    };
-    return colorMap[category] || 'gray';
-  };
-
-  const categories = ['all', ...Array.from(new Set(templates.map(t => t.category)))];
+  // ===================================================================
+  // RENDERIZAÇÃO
+  // ===================================================================
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Templates de Relatórios</h2>
-          <p className="text-gray-600">Templates pré-definidos para relatórios comuns</p>
-        </div>
-        <div className="flex space-x-3">
-          <Button variant="outline" onClick={() => setActiveTab('favorites')}>
-            <Eye className="w-4 h-4 mr-2" />
-            Favoritos
-          </Button>
-          <Button variant="outline" onClick={() => setActiveTab('recent')}>
-            <Clock className="w-4 h-4 mr-2" />
-            Recentes
-          </Button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            placeholder="Buscar templates..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
-          />
-        </div>
-        <div className="w-full sm:w-48">
-          <Select
-            value={selectedCategory}
-            onValueChange={setSelectedCategory}
-          >
-            <option value="all">Todas as categorias</option>
-            {categories.filter(cat => cat !== 'all').map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </Select>
-        </div>
-      </div>
-
-      {/* Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template) => {
-          const IconComponent = getIconComponent(template.icon);
-          const categoryColor = getCategoryColor(template.category);
-          
-          return (
-            <Card key={template.id} className="p-6 hover:shadow-lg transition-all duration-200">
-              {/* Template Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg bg-${categoryColor}-100 text-${categoryColor}-600`}>
-                    <IconComponent className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <Badge variant="secondary" className={`bg-${categoryColor}-100 text-${categoryColor}-700`}>
-                      {template.category}
-                    </Badge>
-                    {template.isDefault && (
-                      <Badge variant="outline" className="ml-2 text-xs">Padrão</Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="flex space-x-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleTemplateSelect(template)}
-                    title="Usar template"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleTemplateEdit(template)}
-                    title="Editar template"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleTemplateCopy(template)}
-                    title="Copiar template"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  {!template.isDefault && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleTemplateDelete(template.id)}
-                      title="Excluir template"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* Template Content */}
-              <h3 className="font-semibold text-gray-900 mb-2 text-lg">{template.name}</h3>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{template.description}</p>
-
-              {/* Template Stats */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Tipo de gráfico:</span>
-                  <span className="font-medium capitalize">{template.chartType}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Frequência:</span>
-                  <span className="font-medium capitalize">{template.frequency}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Parâmetros:</span>
-                  <span className="font-medium">{template.parameters.length}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Usado:</span>
-                  <span className="font-medium">{template.usageCount} vezes</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Último uso:</span>
-                  <span className="font-medium">{template.lastUsed}</span>
-                </div>
-              </div>
-
-              {/* Template Actions */}
-              <div className="mt-6 pt-4 border-t border-gray-100">
-                <div className="flex space-x-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleTemplateSelect(template)}
-                    className="flex-1"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Usar Template
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleTemplateEdit(template)}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Empty State */}
-      {filteredTemplates.length === 0 && (
-        <div className="text-center py-12">
-          <FileText className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum template encontrado</h3>
-          <p className="text-gray-600">
-            {searchTerm || selectedCategory !== 'all' 
-              ? 'Tente ajustar os filtros de busca'
-              : 'Não há templates disponíveis no momento'
-            }
-          </p>
-        </div>
-      )}
-
-      {/* Edit Template Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        title="Editar Template"
-        size="lg"
-      >
-        {editingTemplate && (
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nome do Template
-                </label>
-                <Input
-                  value={editingTemplate.name}
-                  onChange={(e) => setEditingTemplate(prev => prev ? { ...prev, name: e.target.value } : null)}
-                  placeholder="Nome do template"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Categoria
-                </label>
-                <Select
-                  value={editingTemplate.category}
-                  onValueChange={(value) => setEditingTemplate(prev => prev ? { ...prev, category: value } : null)}
-                >
-                  <option value="Vendas">Vendas</option>
-                  <option value="Clientes">Clientes</option>
-                  <option value="Financeiro">Financeiro</option>
-                  <option value="Destinos">Destinos</option>
-                  <option value="Operacional">Operacional</option>
-                  <option value="Marketing">Marketing</option>
-                </Select>
-              </div>
-            </div>
-
-            {/* Description */}
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Descrição
-              </label>
-              <textarea
-                value={editingTemplate.description}
-                onChange={(e) => setEditingTemplate(prev => prev ? { ...prev, description: e.target.value } : null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-                placeholder="Descrição do template"
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Templates de Relatórios
+              </h1>
+              <p className="text-gray-600">
+                Escolha entre templates pré-definidos ou crie seus próprios relatórios
+              </p>
+            </div>
+            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <Plus className="w-4 h-4" />
+              <span>Novo Template</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filtros e Controles */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            {/* Busca */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar templates..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                title="Buscar templates por nome, descrição ou tags"
               />
             </div>
 
-            {/* Chart Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de Gráfico
+            {/* Controles */}
+            <div className="flex items-center space-x-4">
+              {/* Favoritos */}
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={favoritesOnly}
+                  onChange={(e) => setFavoritesOnly(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Apenas favoritos</span>
               </label>
-              <Select
-                value={editingTemplate.chartType}
-                onValueChange={(value) => setEditingTemplate(prev => prev ? { ...prev, chartType: value as any } : null)}
-              >
-                <option value="bar">Barras</option>
-                <option value="line">Linha</option>
-                <option value="pie">Pizza</option>
-                <option value="area">Área</option>
-                <option value="table">Tabela</option>
-              </Select>
-            </div>
 
-            {/* Frequency */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Frequência de Uso
-              </label>
-              <Select
-                value={editingTemplate.frequency}
-                onValueChange={(value) => setEditingTemplate(prev => prev ? { ...prev, frequency: value as any } : null)}
-              >
-                <option value="once">Uma vez</option>
-                <option value="daily">Diário</option>
-                <option value="weekly">Semanal</option>
-                <option value="monthly">Mensal</option>
-                <option value="quarterly">Trimestral</option>
-              </Select>
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end space-x-3 pt-4 border-t">
-              <Button variant="outline" onClick={() => setShowEditModal(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleSaveTemplate}>
-                <Save className="w-4 h-4 mr-2" />
-                Salvar Alterações
-              </Button>
+              {/* Modo de visualização */}
+              <div className="flex border border-gray-300 rounded-lg">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  title="Visualização em grade"
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  title="Visualização em lista"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
-        )}
-      </Modal>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar - Categorias */}
+          <div className="lg:w-64">
+            <div className="bg-white rounded-lg shadow-sm border p-4">
+              <h3 className="font-semibold text-gray-900 mb-4">Categorias</h3>
+              <div className="space-y-2">
+                {categories.map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-colors ${
+                      selectedCategory === category.id
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      {category.icon}
+                      <span className="text-sm font-medium">{category.name}</span>
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                      {category.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Conteúdo Principal */}
+          <div className="flex-1">
+            {/* Estatísticas */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white rounded-lg shadow-sm border p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total de Templates</p>
+                    <p className="text-2xl font-bold text-gray-900">{reportTemplates.length}</p>
+                  </div>
+                  <FileText className="w-8 h-8 text-blue-600" />
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm border p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Favoritos</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {reportTemplates.filter(t => t.isFavorite).length}
+                    </p>
+                  </div>
+                  <Star className="w-8 h-8 text-yellow-500" />
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm border p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Mais Usados</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {Math.max(...reportTemplates.map(t => t.usageCount))}
+                    </p>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-green-600" />
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm border p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Resultados</p>
+                    <p className="text-2xl font-bold text-gray-900">{filteredTemplates.length}</p>
+                  </div>
+                  <Filter className="w-8 h-8 text-purple-600" />
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de Templates */}
+            {viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredTemplates.map(template => (
+                  <div key={template.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                    <div className="p-6">
+                      {/* Header do Card */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                            {template.icon}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{template.name}</h3>
+                            {template.isDefault && (
+                              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                                Padrão
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <button
+                            onClick={() => handleToggleFavorite(template.id)}
+                            className={`p-1 rounded ${
+                              template.isFavorite 
+                                ? 'text-yellow-500 hover:text-yellow-600' 
+                                : 'text-gray-400 hover:text-yellow-500'
+                            }`}
+                            title={template.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                          >
+                            <Star className={`w-4 h-4 ${template.isFavorite ? 'fill-current' : ''}`} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Descrição */}
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {template.description}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {template.tags.slice(0, 3).map(tag => (
+                          <span key={tag} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Estatísticas */}
+                      <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                        <span>{template.fields} campos</span>
+                        <span>{template.usageCount} usos</span>
+                        {template.lastUsed && (
+                          <span>Usado em {new Date(template.lastUsed).toLocaleDateString('pt-BR')}</span>
+                        )}
+                      </div>
+
+                      {/* Ações */}
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleUseTemplate(template)}
+                          className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          <Eye className="w-4 h-4" />
+                          <span>Usar</span>
+                        </button>
+                        <button
+                          onClick={() => handleDuplicateTemplate(template)}
+                          className="flex items-center justify-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                          title="Duplicar template"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm border">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Template
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Categoria
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Campos
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Usos
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Ações
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredTemplates.map(template => (
+                        <tr key={template.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                                {template.icon}
+                              </div>
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-medium text-gray-900">{template.name}</span>
+                                  {template.isDefault && (
+                                    <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                                      Padrão
+                                    </span>
+                                  )}
+                                  {template.isFavorite && (
+                                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-600 line-clamp-1">
+                                  {template.description}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm text-gray-900 capitalize">
+                              {template.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm text-gray-900">{template.fields}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm text-gray-900">{template.usageCount}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => handleUseTemplate(template)}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              >
+                                Usar
+                              </button>
+                              <button
+                                onClick={() => handleDuplicateTemplate(template)}
+                                className="text-gray-600 hover:text-gray-800 text-sm"
+                                title="Duplicar template"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Mensagem quando não há resultados */}
+            {filteredTemplates.length === 0 && (
+              <div className="text-center py-12">
+                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Nenhum template encontrado
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Tente ajustar os filtros ou criar um novo template.
+                </p>
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  Criar Novo Template
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export { ReportTemplates };
-export type { ReportTemplate };
+export default ReportTemplates;

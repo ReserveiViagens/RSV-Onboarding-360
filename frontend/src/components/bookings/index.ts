@@ -1,7 +1,8 @@
 // Componentes de Reservas
+export { default as BookingCalendar } from './BookingCalendar';
+export { default as BookingModal } from './BookingModal';
+export { default as BookingTable } from './BookingTable';
 export { Calendar } from './Calendar';
-export { BookingModal } from './BookingModal';
-export { BookingTable } from './BookingTable';
 
 // Tipos
 export type { CalendarBooking, CalendarProps } from './Calendar';

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSV 360° Ecosystem Master</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .status {
+            background: #10B981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .service {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .service h3 {
+            margin: 0 0 0.5rem 0;
+            color: #334155;
+        }
+        .service a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .service a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌐 RSV 360° Ecosystem</div>
+        <h1>Servidor Principal</h1>
+        <div class="status">✅ ONLINE</div>
+        
+        <div class="services">
+            <div class="service">
+                <h3>🏢 CRM System</h3>
+                <a href="http://localhost:3001" target="_blank">Acessar</a>
+            </div>
+            <div class="service">
+                <h3>🎯 Booking Engine</h3>
+                <a href="http://localhost:3002" target="_blank">Acessar</a>
+            </div>
+            <div class="service">
+                <h3>🏨 Hotel Management</h3>
+                <a href="http://localhost:3003" target="_blank">Acessar</a>
+            </div>
+            <div class="service">
+                <h3>📊 Analytics Intelligence</h3>
+                <a href="http://localhost:3004" target="_blank">Acessar</a>
+            </div>
+            <div class="service">
+                <h3>📊 Grafana Dashboard</h3>
+                <a href="http://localhost:3006" target="_blank">Acessar</a>
+            </div>
+            <div class="service">
+                <h3>🔍 Health Check</h3>
+                <a href="/health" target="_blank">Verificar</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Versão 1.0.0 | Status: 100% Operacional</p>
+            <p>Todos os 8 serviços ativos e funcionando</p>
+        </div>
+    </div>
+</body>
+</html>

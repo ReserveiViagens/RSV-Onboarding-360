@@ -1,20 +1,12 @@
-// Componentes de Relatórios e Analytics - FASE 8
-export { CustomReportBuilder } from './CustomReportBuilder';
-export { ReportTemplates } from './ReportTemplates';
-export { ReportScheduler } from './ReportScheduler';
-export { ReportExport } from './ReportExport';
+// ===================================================================
+// REPORTS INDEX - EXPORTAÇÕES DO SISTEMA DE RELATÓRIOS
+// ===================================================================
 
-// Tipos e interfaces
-export type { 
-  ReportTemplate, 
-  ReportField 
-} from './CustomReportBuilder';
-
-export type { 
-  ScheduledReport 
-} from './ReportScheduler';
-
-export type { 
-  ExportJob, 
-  ExportTemplate 
-} from './ReportExport';
+export { default as ReportBuilder } from './ReportBuilder';
+export { default as ReportTemplates } from './ReportTemplates';
+export { default as DataExport } from './DataExport';
+export { default as ReportScheduler } from './ReportScheduler';
+export { default as ReportHistory } from './ReportHistory';
+export { default as ReportAnalytics } from './ReportAnalytics';
+export { default as ReportSharing } from './ReportSharing';
+export { default as ReportNotifications } from './ReportNotifications';

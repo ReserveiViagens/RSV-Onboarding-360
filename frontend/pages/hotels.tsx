@@ -1,12 +1,12 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { 
-  Building, 
-  MapPin, 
-  Star, 
-  DollarSign, 
-  Users, 
-  Calendar, 
-  Search, 
+import {
+  Building,
+  MapPin,
+  Star,
+  DollarSign,
+  Users,
+  Calendar,
+  Search,
   Filter,
   Plus,
   Edit,
@@ -236,7 +236,10 @@ export default function Hotels() {
   };
 
   const handleAddHotel = () => {
+    console.log('🐛 DEBUG: handleAddHotel chamado');
+    console.log('🐛 DEBUG: showAddModal antes:', showAddModal);
     setShowAddModal(true);
+    console.log('🐛 DEBUG: setShowAddModal(true) executado');
   };
 
   const handleEditHotel = (hotel: Hotel) => {
@@ -257,14 +260,14 @@ export default function Hotels() {
     try {
       // Simular upload de vídeo
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Adicionar vídeo ao hotel selecionado
-      const updatedHotels = hotels.map(hotel => 
-        hotel.id === selectedHotel.id 
+      const updatedHotels = hotels.map(hotel =>
+        hotel.id === selectedHotel.id
           ? { ...hotel, videos: [...hotel.videos, URL.createObjectURL(newVideo)] }
           : hotel
       );
-      
+
       setHotels(updatedHotels);
       setShowVideoModal(false);
       setNewVideo(null);
@@ -280,8 +283,8 @@ export default function Hotels() {
 
   const handleDeleteVideo = (hotelId: number, videoIndex: number) => {
     if (confirm('Tem certeza que deseja excluir este vídeo?')) {
-      const updatedHotels = hotels.map(hotel => 
-        hotel.id === hotelId 
+      const updatedHotels = hotels.map(hotel =>
+        hotel.id === hotelId
           ? { ...hotel, videos: hotel.videos.filter((_, index) => index !== videoIndex) }
           : hotel
       );
@@ -294,7 +297,7 @@ export default function Hotels() {
     const totalHotels = hotels.length;
     const averageRating = hotels.reduce((sum, hotel) => sum + hotel.rating, 0) / totalHotels;
     const averageRevenue = hotels.reduce((sum, hotel) => sum + hotel.price, 0) / totalHotels;
-    
+
     return {
       total: totalHotels,
       rating: averageRating.toFixed(1),
@@ -306,12 +309,12 @@ export default function Hotels() {
     try {
       // Simular geração de relatório
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const content = `Relatório de Hotéis\n\n`;
-      const report = content + hotels.map(hotel => 
+      const report = content + hotels.map(hotel =>
         `${hotel.name} - ${hotel.location} - R$ ${hotel.price}/noite`
       ).join('\n');
-      
+
       const blob = new Blob([report], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -319,7 +322,7 @@ export default function Hotels() {
       a.download = 'relatorio-hoteis.txt';
       a.click();
       URL.revokeObjectURL(url);
-      
+
       alert('Relatório exportado com sucesso!');
     } catch (error) {
       console.error('Erro ao exportar relatório:', error);
@@ -646,7 +649,10 @@ export default function Hotels() {
         )}
 
         {/* Modal de Adicionar/Editar Hotel */}
-        {showAddModal && (
+        {(() => {
+          console.log('🐛 DEBUG: Renderizando modal, showAddModal =', showAddModal);
+          return showAddModal;
+        })() && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
@@ -732,4 +738,4 @@ export default function Hotels() {
       </div>
     </div>
   );
-} 
+}

@@ -1,15 +1,24 @@
 {
-  "name": "Reservei Viagens - Sistema de Gestão",
-  "short_name": "Reservei RSV",
-  "description": "Sistema completo de gestão de viagens e reservas para Reservei Viagens",
-  "start_url": "/",
-  "display": "standalone",
+  "name": "RSV 360 - Sistema de Reservas",
+  "short_name": "RSV 360",
+  "description": "Sistema completo de gestão de viagens e reservas hoteleiras",
+  "theme_color": "#2563eb",
   "background_color": "#ffffff",
-  "theme_color": "#2563EB",
+  "display": "standalone",
   "orientation": "portrait-primary",
   "scope": "/",
+  "start_url": "/",
+  "id": "rsv-360-pwa",
   "lang": "pt-BR",
+  "dir": "ltr",
   "categories": ["travel", "business", "productivity"],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -60,70 +69,120 @@
       "purpose": "maskable any"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Acessar dashboard principal",
-      "url": "/dashboard",
-      "icons": [
-        {
-          "src": "/icons/shortcut-dashboard.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Nova Reserva",
-      "short_name": "Nova Reserva",
-      "description": "Criar nova reserva",
-      "url": "/travel?action=new",
-      "icons": [
-        {
-          "src": "/icons/shortcut-booking.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Clientes",
-      "short_name": "Clientes",
-      "description": "Gerenciar clientes",
-      "url": "/customers",
-      "icons": [
-        {
-          "src": "/icons/shortcut-customers.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Relatórios",
-      "short_name": "Relatórios",
-      "description": "Visualizar relatórios",
-      "url": "/reports",
-      "icons": [
-        {
-          "src": "/icons/shortcut-reports.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
   "screenshots": [
     {
       "src": "/screenshots/desktop-dashboard.png",
-      "sizes": "1280x720",
+      "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Dashboard principal do sistema"
     },
     {
-      "src": "/screenshots/mobile-dashboard.png",
+      "src": "/screenshots/mobile-hotels.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Dashboard mobile responsivo"
+      "label": "Lista de hotéis em dispositivos móveis"
+    },
+    {
+      "src": "/screenshots/mobile-booking.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Processo de reserva mobile"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Acesso rápido ao dashboard executivo",
+      "url": "/dashboard-executivo",
+      "icons": [
+        {
+          "src": "/icons/shortcut-dashboard.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Hotéis",
+      "short_name": "Hotéis",
+      "description": "Buscar e gerenciar hotéis",
+      "url": "/hoteis",
+      "icons": [
+        {
+          "src": "/icons/shortcut-hotels.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Reservas",
+      "short_name": "Reservas",
+      "description": "Gerenciar reservas de hotéis",
+      "url": "/reservas-hoteis",
+      "icons": [
+        {
+          "src": "/icons/shortcut-bookings.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Atendimento",
+      "short_name": "Suporte",
+      "description": "Central de atendimento ao cliente",
+      "url": "/central-atendimento",
+      "icons": [
+        {
+          "src": "/icons/shortcut-support.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["image/*", ".pdf"]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+rsv",
+      "url": "/handle-protocol?url=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/import-data",
+      "accept": {
+        "application/vnd.ms-excel": [".xls"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "text/csv": [".csv"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone",
+    "browser"
   ]
 }

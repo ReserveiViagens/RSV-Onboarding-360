@@ -1,0 +1,56 @@
+# Multi-stage build for Booking Engine
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY BUSINESS-MODULES/booking-engine/package*.json ./BUSINESS-MODULES/booking-engine/
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build the booking engine
+RUN npm run build:booking
+
+# Production image, copy all the files and run the app
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3002
+ENV SERVICE_NAME=booking-engine
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 booking
+
+# Copy built application
+COPY --from=builder /app/BUSINESS-MODULES/booking-engine/dist ./dist
+COPY --from=builder /app/BUSINESS-MODULES/booking-engine ./BUSINESS-MODULES/booking-engine
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy configuration files
+COPY --from=builder /app/ecosystem-config.json ./
+
+# Set proper permissions
+RUN chown -R booking:nodejs /app
+USER booking
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3002/health || exit 1
+
+# Expose port
+EXPOSE 3002
+
+# Start the booking engine
+CMD ["node", "BUSINESS-MODULES/booking-engine/dist/index.js"]

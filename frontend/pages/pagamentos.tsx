@@ -1,18 +1,18 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { 
-    DollarSign, 
-    CreditCard, 
-    Wallet, 
-    Users, 
-    Building2, 
-    Plane, 
-    Handshake, 
-    Plus, 
-    Edit, 
-    Trash, 
-    X, 
-    Save, 
-    Search, 
+import {
+    DollarSign,
+    CreditCard,
+    Wallet,
+    Users,
+    Building2,
+    Plane,
+    Handshake,
+    Plus,
+    Edit,
+    Trash,
+    X,
+    Save,
+    Search,
     Filter,
     Eye,
     FileText,
@@ -476,10 +476,10 @@ export default function PagamentosPage() {
         setExportGenerating(true);
         try {
             await new Promise(resolve => setTimeout(resolve, 2000));
-            
+
             const filename = `relatorio-pagamentos-${new Date().toISOString().split('T')[0]}.${exportFormat}`;
             const content = `Relatório de Pagamentos - ${new Date().toLocaleDateString()}\n\n`;
-            
+
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -489,7 +489,7 @@ export default function PagamentosPage() {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
+
             setShowExportModal(false);
             alert('Relatório exportado com sucesso!');
         } catch (error) {
@@ -555,8 +555,8 @@ export default function PagamentosPage() {
     };
 
     const toggleCategory = (categoryId: string) => {
-        setExpandedCategories(prev => 
-            prev.includes(categoryId) 
+        setExpandedCategories(prev =>
+            prev.includes(categoryId)
                 ? prev.filter(id => id !== categoryId)
                 : [...prev, categoryId]
         );
@@ -574,10 +574,10 @@ export default function PagamentosPage() {
     const getPaymentsByPeriod = (period: 'diario' | 'semanal' | 'mensal' | 'anual') => {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
+
         return payments.filter(payment => {
             const paymentDate = new Date(payment.dueDate);
-            
+
             switch (period) {
                 case 'diario':
                     return paymentDate.toDateString() === today.toDateString();
@@ -602,7 +602,7 @@ export default function PagamentosPage() {
         const paid = categoryPayments.filter(p => p.status === 'pago').reduce((acc, p) => acc + p.totalAmount, 0);
         const pending = categoryPayments.filter(p => p.status === 'pendente').reduce((acc, p) => acc + p.remainingBalance, 0);
         const overdue = categoryPayments.filter(p => p.status === 'atrasado').reduce((acc, p) => acc + p.remainingBalance, 0);
-        
+
         return { total, paid, pending, overdue, count: categoryPayments.length };
     };
 
@@ -612,7 +612,7 @@ export default function PagamentosPage() {
         const paid = subcategoryPayments.filter(p => p.status === 'pago').reduce((acc, p) => acc + p.totalAmount, 0);
         const pending = subcategoryPayments.filter(p => p.status === 'pendente').reduce((acc, p) => acc + p.remainingBalance, 0);
         const overdue = subcategoryPayments.filter(p => p.status === 'atrasado').reduce((acc, p) => acc + p.remainingBalance, 0);
-        
+
         return { total, paid, pending, overdue, count: subcategoryPayments.length };
     };
 
@@ -622,7 +622,7 @@ export default function PagamentosPage() {
         const paid = periodPayments.filter(p => p.status === 'pago').reduce((acc, p) => acc + p.totalAmount, 0);
         const pending = periodPayments.filter(p => p.status === 'pendente').reduce((acc, p) => acc + p.remainingBalance, 0);
         const overdue = periodPayments.filter(p => p.status === 'atrasado').reduce((acc, p) => acc + p.remainingBalance, 0);
-        
+
         return { total, paid, pending, overdue, count: periodPayments.length };
     };
 
@@ -630,11 +630,11 @@ export default function PagamentosPage() {
         const matchesSearch = payment.recipientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             payment.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             payment.reference.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         const matchesType = selectedType === 'all' || payment.type === selectedType;
         const matchesCategory = selectedCategory === 'all' || payment.category === selectedCategory;
         const matchesStatus = selectedStatus === 'all' || payment.status === selectedStatus;
-        
+
         return matchesSearch && matchesType && matchesCategory && matchesStatus;
     });
 
@@ -688,8 +688,8 @@ export default function PagamentosPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         {metrics.map((metric, index) => (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className="bg-white rounded-lg shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow"
                                 onClick={() => handleMetricClick(metric.name)}
                             >
@@ -717,7 +717,7 @@ export default function PagamentosPage() {
                         <div className="lg:col-span-1">
                             <div className="bg-white rounded-lg shadow-sm p-6">
                                 <h3 className="text-lg font-semibold mb-4">Categorias</h3>
-                                
+
                                 {/* Filtros */}
                                 <div className="space-y-4 mb-6">
                                     <div>
@@ -736,7 +736,7 @@ export default function PagamentosPage() {
                                             <option value="hospede">Hóspedes</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                                         <select
@@ -774,7 +774,7 @@ export default function PagamentosPage() {
                                                     <ChevronRight className="w-4 h-4" />
                                                 )}
                                             </button>
-                                            
+
                                             {expandedCategories.includes(category.id) && (
                                                 <div className="px-4 pb-3">
                                                     <div className="space-y-1">
@@ -823,8 +823,8 @@ export default function PagamentosPage() {
                             {/* Cards de Pagamentos */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {filteredPayments.map((payment) => (
-                                    <div 
-                                        key={payment.id} 
+                                    <div
+                                        key={payment.id}
                                         className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                                         onClick={() => handlePaymentCardClick(payment)}
                                     >
@@ -851,7 +851,7 @@ export default function PagamentosPage() {
                                                     <p className="text-sm text-gray-600">Descrição</p>
                                                     <p className="text-sm font-medium text-gray-900">{payment.description}</p>
                                                 </div>
-                                                
+
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <p className="text-sm text-gray-600">Valor Total</p>
@@ -922,7 +922,158 @@ export default function PagamentosPage() {
                 </div>
 
                 {/* Modais de Detalhes */}
-                
+
+                {/* Modal de Novo Pagamento */}
+                {showNewPaymentModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold text-gray-900">Novo Pagamento</h2>
+                                <button
+                                    onClick={() => setShowNewPaymentModal(false)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <form className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Pagamento</label>
+                                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Selecione o tipo</option>
+                                            <option value="corretor">Corretor</option>
+                                            <option value="proprietario">Proprietário</option>
+                                            <option value="consultor">Consultor de Viagem</option>
+                                            <option value="parceiro">Parceiro</option>
+                                            <option value="cliente">Cliente</option>
+                                            <option value="hospede">Hóspede</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Selecione a categoria</option>
+                                            <option value="Comissão de Vendas">Comissão de Vendas</option>
+                                            <option value="Comissão de Hospedagem">Comissão de Hospedagem</option>
+                                            <option value="Taxa de Gestão">Taxa de Gestão</option>
+                                            <option value="Pacotes de Viagem">Pacotes de Viagem</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome do Beneficiário</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Nome completo"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input
+                                            type="email"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="email@exemplo.com"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                                        <input
+                                            type="tel"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="(11) 99999-9999"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Método de Pagamento</label>
+                                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Selecione o método</option>
+                                            <option value="PIX">PIX</option>
+                                            <option value="Transferência">Transferência</option>
+                                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                            <option value="Cartão de Débito">Cartão de Débito</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Descrição do pagamento"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Valor Total</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Data de Vencimento</label>
+                                        <input
+                                            type="date"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Referência</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="PAY-XXX"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                    <textarea
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Observações adicionais..."
+                                    />
+                                </div>
+
+                                <div className="flex space-x-3 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowNewPaymentModal(false)}
+                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <Save className="w-4 h-4" />
+                                        Salvar Pagamento
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
                 {/* Modal de Detalhes da Categoria */}
                 {showCategoryDetails && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -938,12 +1089,12 @@ export default function PagamentosPage() {
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {['diario', 'semanal', 'mensal', 'anual'].map((period) => {
                                     const stats = getPeriodStats(period as any);
                                     return (
-                                        <div 
+                                        <div
                                             key={period}
                                             className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors"
                                             onClick={() => handlePeriodClick(period as any)}
@@ -955,7 +1106,7 @@ export default function PagamentosPage() {
                                     );
                                 })}
                             </div>
-                            
+
                             <div className="space-y-4">
                                 <h3 className="font-semibold text-gray-900">Subcategorias</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -964,7 +1115,7 @@ export default function PagamentosPage() {
                                         ?.subcategories.map((subcategory, index) => {
                                             const stats = getSubcategoryStats(subcategory);
                                             return (
-                                                <div 
+                                                <div
                                                     key={index}
                                                     className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                                                     onClick={() => handleSubcategoryClick(subcategory)}
@@ -996,14 +1147,14 @@ export default function PagamentosPage() {
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {['diario', 'semanal', 'mensal', 'anual'].map((period) => {
                                     const periodPayments = getPaymentsByPeriod(period as any);
                                     const subcategoryPayments = periodPayments.filter(p => p.subcategory === selectedSubcategoryDetails);
                                     const total = subcategoryPayments.reduce((acc, p) => acc + p.totalAmount, 0);
                                     return (
-                                        <div 
+                                        <div
                                             key={period}
                                             className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors"
                                             onClick={() => handlePeriodClick(period as any)}
@@ -1015,7 +1166,7 @@ export default function PagamentosPage() {
                                     );
                                 })}
                             </div>
-                            
+
                             <div className="space-y-4">
                                 <h3 className="font-semibold text-gray-900">Pagamentos</h3>
                                 <div className="space-y-2">
@@ -1057,17 +1208,17 @@ export default function PagamentosPage() {
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {paymentCategories.map((category) => {
                                     const categoryPayments = getPaymentsByCategory(category.id);
                                     const periodPayments = getPaymentsByPeriod(selectedPeriod);
-                                    const filteredPayments = categoryPayments.filter(p => 
+                                    const filteredPayments = categoryPayments.filter(p =>
                                         periodPayments.some(pp => pp.id === p.id)
                                     );
                                     const total = filteredPayments.reduce((acc, p) => acc + p.totalAmount, 0);
                                     return (
-                                        <div 
+                                        <div
                                             key={category.id}
                                             className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                                             onClick={() => handleCategoryClick(category.id)}
@@ -1084,7 +1235,7 @@ export default function PagamentosPage() {
                                     );
                                 })}
                             </div>
-                            
+
                             <div className="space-y-4">
                                 <h3 className="font-semibold text-gray-900">Pagamentos do Período</h3>
                                 <div className="space-y-2">
@@ -1126,7 +1277,7 @@ export default function PagamentosPage() {
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
-                            
+
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="font-semibold text-gray-900 mb-3">Informações do Pagamento</h3>
@@ -1151,7 +1302,7 @@ export default function PagamentosPage() {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <h3 className="font-semibold text-gray-900 mb-3">Detalhes</h3>
                                     <div className="space-y-2">
@@ -1185,7 +1336,7 @@ export default function PagamentosPage() {
                                         )}
                                     </div>
                                 </div>
-                                
+
                                 <div className="flex space-x-3">
                                     <button
                                         onClick={() => handleMakePayment(selectedPaymentForHistory)}
@@ -1207,4 +1358,4 @@ export default function PagamentosPage() {
             </div>
         </ProtectedRoute>
     );
-} 
+}

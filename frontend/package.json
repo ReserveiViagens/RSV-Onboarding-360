@@ -1,39 +1,66 @@
 {
-  "name": "onion-360-rsv-frontend",
+  "name": "rsv-360-ecosystem-frontend",
   "version": "1.0.0",
+  "description": "RSV 360° Ecosystem Frontend - Dashboard modular para Reservei Viagens",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:windows": "set NODE_ENV=development && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:e2e": "playwright test"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@ionic/react": "^7.8.0",
-    "@types/qrcode": "^1.5.5",
-    "axios": "^1.6.0",
-    "lucide-react": "^0.379.0",
-    "next": "^15.4.4",
-    "qrcode": "^1.5.4",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "recharts": "^2.12.0",
-    "socket.io-client": "^4.7.5"
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^5.2.1",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@types/file-saver": "^2.0.7",
+    "@types/recharts": "^1.8.29",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "file-saver": "^2.0.5",
+    "framer-motion": "^12.23.12",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.2",
+    "lucide-react": "^0.542.0",
+    "next": "^15.5.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.62.0",
+    "recharts": "^3.1.2",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.3.1",
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.5"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.9.0",
-    "@playwright/test": "^1.48.2",
-    "@types/next": "^8.0.7",
-    "@types/node": "^24.0.15",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.0",
-    "postcss": "^8",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.55.0",
+    "eslint-config-next": "^14.0.0",
+    "postcss": "^8.4.0",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.3.3"
-  }
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "dashboard",
+    "rsv-360",
+    "reservei-viagens",
+    "tourism",
+    "booking"
+  ],
+  "author": {
+    "name": "Reservei Viagens",
+    "email": "reservas@reserveiviagens.com.br",
+    "url": "https://reserveiviagens.com.br"
+  },
+  "license": "MIT"
 }

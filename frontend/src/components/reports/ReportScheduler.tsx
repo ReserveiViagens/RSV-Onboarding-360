@@ -1,788 +1,632 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { 
   Calendar, 
   Clock, 
   Mail, 
-  Users, 
-  Plus, 
-  Edit, 
-  Trash2, 
+  Settings, 
   Play, 
   Pause, 
-  Stop,
-  Download,
+  Edit3, 
+  Trash2, 
   Eye,
   CheckCircle,
   AlertCircle,
-  XCircle
+  Plus,
+  Filter,
+  Search
 } from 'lucide-react';
-import { Card } from '../ui/Card';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { Select } from '../ui/Select';
-import { Modal } from '../ui/Modal';
-import { Badge } from '../ui/Badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/Tabs';
-import { useUIStore } from '../../stores/useUIStore';
+
+// ===================================================================
+// TIPOS E INTERFACES
+// ===================================================================
 
 interface ScheduledReport {
   id: string;
   name: string;
-  templateId: string;
-  templateName: string;
-  frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  description: string;
+  template: string;
+  frequency: 'daily' | 'weekly' | 'monthly';
   time: string;
-  dayOfWeek?: number; // 0-6 (Domingo-Sábado)
+  dayOfWeek?: number; // 0-6 (domingo-sábado)
   dayOfMonth?: number; // 1-31
-  recipients: string[];
-  status: 'active' | 'paused' | 'stopped';
-  lastRun: string | null;
+  emailRecipients: string[];
+  isActive: boolean;
+  lastRun?: string;
   nextRun: string;
-  totalRuns: number;
-  successfulRuns: number;
-  failedRuns: number;
   createdAt: string;
   createdBy: string;
 }
 
-interface ReportSchedulerProps {
-  onScheduleCreated?: (schedule: ScheduledReport) => void;
-  onScheduleUpdated?: (schedule: ScheduledReport) => void;
+interface ReportExecution {
+  id: string;
+  reportId: string;
+  reportName: string;
+  status: 'success' | 'failed' | 'running';
+  startedAt: string;
+  completedAt?: string;
+  duration?: number; // em segundos
+  fileSize?: number; // em bytes
+  error?: string;
+  downloadUrl?: string;
 }
 
-const ReportScheduler: React.FC<ReportSchedulerProps> = ({ 
-  onScheduleCreated,
-  onScheduleUpdated 
-}) => {
-  const [scheduledReports, setScheduledReports] = useState<ScheduledReport[]>([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState<ScheduledReport | null>(null);
-  const [activeTab, setActiveTab] = useState('active');
-  const [newSchedule, setNewSchedule] = useState<Partial<ScheduledReport>>({});
-  
-  const { showNotification } = useUIStore();
+// ===================================================================
+// DADOS MOCK
+// ===================================================================
 
-  // Dados mock para demonstração
-  const mockScheduledReports: ScheduledReport[] = [
-    {
-      id: 'schedule-1',
-      name: 'Relatório Diário de Vendas',
-      templateId: 'sales-performance',
-      templateName: 'Performance de Vendas',
-      frequency: 'daily',
-      time: '08:00',
-      recipients: ['gerente@reserveiviagens.com.br', 'vendas@reserveiviagens.com.br'],
-      status: 'active',
-      lastRun: '2025-01-20T08:00:00Z',
-      nextRun: '2025-01-21T08:00:00Z',
-      totalRuns: 45,
-      successfulRuns: 43,
-      failedRuns: 2,
-      createdAt: '2025-01-01T00:00:00Z',
-      createdBy: 'admin@reserveiviagens.com.br'
-    },
-    {
-      id: 'schedule-2',
-      name: 'Relatório Semanal de Clientes',
-      templateId: 'customer-segmentation',
-      templateName: 'Segmentação de Clientes',
-      frequency: 'weekly',
-      time: '09:00',
-      dayOfWeek: 1, // Segunda-feira
-      recipients: ['marketing@reserveiviagens.com.br', 'gerente@reserveiviagens.com.br'],
-      status: 'active',
-      lastRun: '2025-01-20T09:00:00Z',
-      nextRun: '2025-01-27T09:00:00Z',
-      totalRuns: 12,
-      successfulRuns: 12,
-      failedRuns: 0,
-      createdAt: '2025-01-01T00:00:00Z',
-      createdBy: 'admin@reserveiviagens.com.br'
-    },
-    {
-      id: 'schedule-3',
-      name: 'Relatório Mensal Financeiro',
-      templateId: 'financial-summary',
-      templateName: 'Resumo Financeiro',
-      frequency: 'monthly',
-      time: '10:00',
-      dayOfMonth: 1,
-      recipients: ['financeiro@reserveiviagens.com.br', 'gerente@reserveiviagens.com.br', 'diretoria@reserveiviagens.com.br'],
-      status: 'paused',
-      lastRun: '2025-01-01T10:00:00Z',
-      nextRun: '2025-02-01T10:00:00Z',
-      totalRuns: 3,
-      successfulRuns: 3,
-      failedRuns: 0,
-      createdAt: '2025-01-01T00:00:00Z',
-      createdBy: 'admin@reserveiviagens.com.br'
-    },
-    {
-      id: 'schedule-4',
-      name: 'Relatório Trimestral de Destinos',
-      templateId: 'destination-popularity',
-      templateName: 'Popularidade dos Destinos',
-      frequency: 'quarterly',
-      time: '14:00',
-      dayOfMonth: 1,
-      recipients: ['operacional@reserveiviagens.com.br', 'gerente@reserveiviagens.com.br'],
-      status: 'active',
-      lastRun: '2025-01-01T14:00:00Z',
-      nextRun: '2025-04-01T14:00:00Z',
-      totalRuns: 1,
-      successfulRuns: 1,
-      failedRuns: 0,
-      createdAt: '2025-01-01T00:00:00Z',
-      createdBy: 'admin@reserveiviagens.com.br'
-    }
-  ];
+const mockScheduledReports: ScheduledReport[] = [
+  {
+    id: '1',
+    name: 'Relatório Diário de Vendas',
+    description: 'Relatório diário com resumo de vendas e métricas principais',
+    template: 'daily-sales',
+    frequency: 'daily',
+    time: '08:00',
+    emailRecipients: ['admin@rsv.com', 'vendas@rsv.com'],
+    isActive: true,
+    lastRun: '2024-01-20T08:00:00Z',
+    nextRun: '2024-01-21T08:00:00Z',
+    createdAt: '2024-01-15T10:00:00Z',
+    createdBy: 'João Silva'
+  },
+  {
+    id: '2',
+    name: 'Relatório Semanal de Clientes',
+    description: 'Análise semanal de novos clientes e retenção',
+    template: 'weekly-customers',
+    frequency: 'weekly',
+    time: '09:00',
+    dayOfWeek: 1, // Segunda-feira
+    emailRecipients: ['marketing@rsv.com'],
+    isActive: true,
+    lastRun: '2024-01-15T09:00:00Z',
+    nextRun: '2024-01-22T09:00:00Z',
+    createdAt: '2024-01-10T14:30:00Z',
+    createdBy: 'Maria Santos'
+  },
+  {
+    id: '3',
+    name: 'Relatório Mensal Financeiro',
+    description: 'Relatório financeiro completo do mês',
+    template: 'monthly-financial',
+    frequency: 'monthly',
+    time: '10:00',
+    dayOfMonth: 1,
+    emailRecipients: ['financeiro@rsv.com', 'diretor@rsv.com'],
+    isActive: false,
+    lastRun: '2024-01-01T10:00:00Z',
+    nextRun: '2024-02-01T10:00:00Z',
+    createdAt: '2023-12-20T16:00:00Z',
+    createdBy: 'Pedro Costa'
+  }
+];
 
-  useEffect(() => {
-    setScheduledReports(mockScheduledReports);
-  }, []);
+const mockExecutions: ReportExecution[] = [
+  {
+    id: '1',
+    reportId: '1',
+    reportName: 'Relatório Diário de Vendas',
+    status: 'success',
+    startedAt: '2024-01-20T08:00:00Z',
+    completedAt: '2024-01-20T08:02:30Z',
+    duration: 150,
+    fileSize: 1024000,
+    downloadUrl: '#'
+  },
+  {
+    id: '2',
+    reportId: '1',
+    reportName: 'Relatório Diário de Vendas',
+    status: 'success',
+    startedAt: '2024-01-19T08:00:00Z',
+    completedAt: '2024-01-19T08:01:45Z',
+    duration: 105,
+    fileSize: 980000,
+    downloadUrl: '#'
+  },
+  {
+    id: '3',
+    reportId: '2',
+    reportName: 'Relatório Semanal de Clientes',
+    status: 'failed',
+    startedAt: '2024-01-15T09:00:00Z',
+    completedAt: '2024-01-15T09:05:00Z',
+    duration: 300,
+    error: 'Erro ao conectar com o banco de dados'
+  }
+];
 
-  const handleCreateSchedule = () => {
-    if (!newSchedule.name || !newSchedule.frequency || !newSchedule.time || !newSchedule.recipients?.length) {
-      showNotification('Preencha todos os campos obrigatórios', 'error');
-      return;
-    }
+// ===================================================================
+// COMPONENTE PRINCIPAL
+// ===================================================================
 
-    const schedule: ScheduledReport = {
-      id: `schedule-${Date.now()}`,
-      name: newSchedule.name!,
-      templateId: newSchedule.templateId || 'custom',
-      templateName: newSchedule.templateName || 'Relatório Customizado',
-      frequency: newSchedule.frequency!,
-      time: newSchedule.time!,
-      dayOfWeek: newSchedule.dayOfWeek,
-      dayOfMonth: newSchedule.dayOfMonth,
-      recipients: newSchedule.recipients!,
-      status: 'active',
-      lastRun: null,
-      nextRun: calculateNextRun(newSchedule.frequency!, newSchedule.time!, newSchedule.dayOfWeek, newSchedule.dayOfMonth),
-      totalRuns: 0,
-      successfulRuns: 0,
-      failedRuns: 0,
-      createdAt: new Date().toISOString(),
-      createdBy: 'current-user@reserveiviagens.com.br'
-    };
+const ReportScheduler: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'schedules' | 'executions' | 'new'>('schedules');
+  const [scheduledReports, setScheduledReports] = useState<ScheduledReport[]>(mockScheduledReports);
+  const [executions, setExecutions] = useState<ReportExecution[]>(mockExecutions);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [showNewForm, setShowNewForm] = useState(false);
 
-    setScheduledReports(prev => [...prev, schedule]);
-    setShowCreateModal(false);
-    setNewSchedule({});
+  // ===================================================================
+  // FILTROS
+  // ===================================================================
+
+  const filteredReports = scheduledReports.filter(report => {
+    const matchesSearch = report.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         report.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'active' && report.isActive) ||
+                         (statusFilter === 'inactive' && !report.isActive);
     
-    if (onScheduleCreated) {
-      onScheduleCreated(schedule);
-    }
-    
-    showNotification('Agendamento criado com sucesso!', 'success');
-  };
+    return matchesSearch && matchesStatus;
+  });
 
-  const calculateNextRun = (frequency: string, time: string, dayOfWeek?: number, dayOfMonth?: number): string => {
-    const now = new Date();
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    let nextRun = new Date(now);
-    nextRun.setHours(hours, minutes, 0, 0);
-    
-    switch (frequency) {
-      case 'daily':
-        if (nextRun <= now) {
-          nextRun.setDate(nextRun.getDate() + 1);
-        }
-        break;
-      case 'weekly':
-        if (dayOfWeek !== undefined) {
-          const currentDay = now.getDay();
-          const daysUntilNext = (dayOfWeek - currentDay + 7) % 7;
-          nextRun.setDate(nextRun.getDate() + daysUntilNext);
-        }
-        break;
-      case 'monthly':
-        if (dayOfMonth) {
-          nextRun.setDate(dayOfMonth);
-          if (nextRun <= now) {
-            nextRun.setMonth(nextRun.getMonth() + 1);
-          }
-        }
-        break;
-      case 'quarterly':
-        if (dayOfMonth) {
-          nextRun.setDate(dayOfMonth);
-          nextRun.setMonth(Math.floor(nextRun.getMonth() / 3) * 3 + 3);
-          if (nextRun <= now) {
-            nextRun.setMonth(nextRun.getMonth() + 3);
-          }
-        }
-        break;
-      case 'yearly':
-        if (dayOfMonth) {
-          nextRun.setDate(dayOfMonth);
-          nextRun.setMonth(0); // Janeiro
-          if (nextRun <= now) {
-            nextRun.setFullYear(nextRun.getFullYear() + 1);
-          }
-        }
-        break;
-    }
-    
-    return nextRun.toISOString();
-  };
+  // ===================================================================
+  // HANDLERS
+  // ===================================================================
 
-  const handleStatusChange = (scheduleId: string, newStatus: 'active' | 'paused' | 'stopped') => {
-    setScheduledReports(prev => prev.map(schedule => 
-      schedule.id === scheduleId 
-        ? { ...schedule, status: newStatus }
-        : schedule
+  const handleToggleActive = (reportId: string) => {
+    setScheduledReports(prev => prev.map(report => 
+      report.id === reportId 
+        ? { ...report, isActive: !report.isActive }
+        : report
     ));
-    
-    const statusText = {
-      active: 'ativado',
-      paused: 'pausado',
-      stopped: 'parado'
-    };
-    
-    showNotification(`Agendamento ${statusText[newStatus]} com sucesso!`, 'success');
   };
 
-  const handleEditSchedule = (schedule: ScheduledReport) => {
-    setEditingSchedule(schedule);
-    setShowEditModal(true);
-  };
-
-  const handleSaveEdit = () => {
-    if (!editingSchedule) return;
-
-    setScheduledReports(prev => prev.map(schedule => 
-      schedule.id === editingSchedule.id ? editingSchedule : schedule
-    ));
-
-    setShowEditModal(false);
-    setEditingSchedule(null);
-    
-    if (onScheduleUpdated) {
-      onScheduleUpdated(editingSchedule);
-    }
-    
-    showNotification('Agendamento atualizado com sucesso!', 'success');
-  };
-
-  const handleDeleteSchedule = (scheduleId: string) => {
-    setScheduledReports(prev => prev.filter(schedule => schedule.id !== scheduleId));
-    showNotification('Agendamento removido com sucesso!', 'success');
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'paused':
-        return <AlertCircle className="w-4 h-4 text-yellow-600" />;
-      case 'stopped':
-        return <XCircle className="w-4 h-4 text-red-600" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-600" />;
+  const handleDeleteReport = (reportId: string) => {
+    if (confirm('Tem certeza que deseja excluir este agendamento?')) {
+      setScheduledReports(prev => prev.filter(report => report.id !== reportId));
+      alert('Agendamento excluído com sucesso!');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'stopped':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+  const handleEditReport = (reportId: string) => {
+    alert(`Editando agendamento: ${reportId}`);
+  };
+
+  const handleViewReport = (reportId: string) => {
+    alert(`Visualizando relatório: ${reportId}`);
+  };
+
+  const handleRunNow = (reportId: string) => {
+    alert(`Executando relatório agora: ${reportId}`);
+  };
+
+  const handleDownloadExecution = (execution: ReportExecution) => {
+    if (execution.downloadUrl) {
+      // Simular download
+      const link = document.createElement('a');
+      link.href = '#';
+      link.download = `${execution.reportName}-${execution.startedAt}.pdf`;
+      link.click();
     }
   };
 
-  const getFrequencyText = (frequency: string, dayOfWeek?: number, dayOfMonth?: number) => {
-    const daysOfWeek = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-    
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
+  const getFrequencyLabel = (frequency: string, dayOfWeek?: number, dayOfMonth?: number) => {
     switch (frequency) {
       case 'daily':
         return 'Diário';
       case 'weekly':
-        return `Semanal (${daysOfWeek[dayOfWeek || 0]})`;
+        const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+        return `Semanal (${days[dayOfWeek || 0]})`;
       case 'monthly':
         return `Mensal (dia ${dayOfMonth || 1})`;
-      case 'quarterly':
-        return `Trimestral (dia ${dayOfMonth || 1})`;
-      case 'yearly':
-        return `Anual (dia ${dayOfMonth || 1} de janeiro)`;
       default:
         return frequency;
     }
   };
 
-  const filteredReports = scheduledReports.filter(report => {
-    if (activeTab === 'active') return report.status === 'active';
-    if (activeTab === 'paused') return report.status === 'paused';
-    if (activeTab === 'stopped') return report.status === 'stopped';
-    return true;
-  });
+  // ===================================================================
+  // RENDERIZAÇÃO
+  // ===================================================================
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Agendamento de Relatórios</h2>
-          <p className="text-gray-600">Configure relatórios automáticos e agendados</p>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Agendamento
-        </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar className="w-5 h-5 text-blue-600" />
-            </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Agendados</p>
-              <p className="text-2xl font-bold text-gray-900">{scheduledReports.length}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Ativos</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {scheduledReports.filter(s => s.status === 'active').length}
-              </p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-yellow-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Pausados</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {scheduledReports.filter(s => s.status === 'paused').length}
-              </p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Download className="w-5 h-5 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Execuções</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {scheduledReports.reduce((sum, s) => sum + s.totalRuns, 0)}
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="active">Ativos</TabsTrigger>
-          <TabsTrigger value="paused">Pausados</TabsTrigger>
-          <TabsTrigger value="stopped">Parados</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value={activeTab} className="space-y-4">
-          <div className="space-y-4">
-            {filteredReports.map((schedule) => (
-              <Card key={schedule.id} className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(schedule.status)}
-                    <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">{schedule.name}</h3>
-                      <p className="text-sm text-gray-600">{schedule.templateName}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge className={getStatusColor(schedule.status)}>
-                      {schedule.status === 'active' ? 'Ativo' : schedule.status === 'paused' ? 'Pausado' : 'Parado'}
-                    </Badge>
-                    <div className="flex space-x-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleEditSchedule(schedule)}
-                        title="Editar agendamento"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDeleteSchedule(schedule.id)}
-                        title="Excluir agendamento"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Frequência</p>
-                    <p className="font-medium">{getFrequencyText(schedule.frequency, schedule.dayOfWeek, schedule.dayOfMonth)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Horário</p>
-                    <p className="font-medium">{schedule.time}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Próxima Execução</p>
-                    <p className="font-medium">{new Date(schedule.nextRun).toLocaleDateString('pt-BR')}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Destinatários</p>
-                    <p className="font-medium">{schedule.recipients.length} email(s)</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Total de Execuções</p>
-                    <p className="font-medium">{schedule.totalRuns}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Execuções Bem-sucedidas</p>
-                    <p className="font-medium text-green-600">{schedule.successfulRuns}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Execuções Falharam</p>
-                    <p className="font-medium text-red-600">{schedule.failedRuns}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="text-sm text-gray-500">
-                    Criado por {schedule.createdBy} em {new Date(schedule.createdAt).toLocaleDateString('pt-BR')}
-                  </div>
-                  <div className="flex space-x-2">
-                    {schedule.status === 'active' ? (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleStatusChange(schedule.id, 'paused')}
-                        >
-                          <Pause className="w-4 h-4 mr-2" />
-                          Pausar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleStatusChange(schedule.id, 'stopped')}
-                        >
-                          <Stop className="w-4 h-4 mr-2" />
-                          Parar
-                        </Button>
-                      </>
-                    ) : schedule.status === 'paused' ? (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleStatusChange(schedule.id, 'active')}
-                        >
-                          <Play className="w-4 h-4 mr-2" />
-                          Retomar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleStatusChange(schedule.id, 'stopped')}
-                        >
-                          <Stop className="w-4 h-4 mr-2" />
-                          Parar
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        size="sm"
-                        onClick={() => handleStatusChange(schedule.id, 'active')}
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Ativar
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {filteredReports.length === 0 && (
-            <div className="text-center py-12">
-              <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {activeTab === 'all' ? 'Nenhum agendamento encontrado' : 
-                 activeTab === 'active' ? 'Nenhum agendamento ativo' :
-                 activeTab === 'paused' ? 'Nenhum agendamento pausado' : 'Nenhum agendamento parado'}
-              </h3>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Agendamento de Relatórios
+              </h1>
               <p className="text-gray-600">
-                {activeTab === 'all' ? 'Crie seu primeiro agendamento de relatório' : 
-                 'Os agendamentos aparecerão aqui quando estiverem neste status'}
+                Configure e gerencie relatórios automáticos
               </p>
             </div>
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Create Schedule Modal */}
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title="Novo Agendamento"
-        size="lg"
-      >
-        <div className="space-y-6">
-          {/* Basic Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nome do Agendamento *
-              </label>
-              <Input
-                value={newSchedule.name || ''}
-                onChange={(e) => setNewSchedule(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Ex: Relatório Diário de Vendas"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Template *
-              </label>
-              <Select
-                value={newSchedule.templateId || ''}
-                onValueChange={(value) => setNewSchedule(prev => ({ ...prev, templateId: value }))}
-              >
-                <option value="">Selecione um template</option>
-                <option value="sales-performance">Performance de Vendas</option>
-                <option value="customer-segmentation">Segmentação de Clientes</option>
-                <option value="financial-summary">Resumo Financeiro</option>
-                <option value="destination-popularity">Popularidade dos Destinos</option>
-                <option value="custom">Relatório Customizado</option>
-              </Select>
-            </div>
-          </div>
-
-          {/* Schedule Configuration */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Frequência *
-              </label>
-              <Select
-                value={newSchedule.frequency || ''}
-                onValueChange={(value) => setNewSchedule(prev => ({ ...prev, frequency: value as any }))}
-              >
-                <option value="">Selecione a frequência</option>
-                <option value="daily">Diário</option>
-                <option value="weekly">Semanal</option>
-                <option value="monthly">Mensal</option>
-                <option value="quarterly">Trimestral</option>
-                <option value="yearly">Anual</option>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Horário *
-              </label>
-              <Input
-                type="time"
-                value={newSchedule.time || ''}
-                onChange={(e) => setNewSchedule(prev => ({ ...prev, time: e.target.value }))}
-              />
-            </div>
-          </div>
-
-          {/* Conditional Fields */}
-          {newSchedule.frequency === 'weekly' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Dia da Semana
-              </label>
-              <Select
-                value={newSchedule.dayOfWeek?.toString() || ''}
-                onValueChange={(value) => setNewSchedule(prev => ({ ...prev, dayOfWeek: parseInt(value) }))}
-              >
-                <option value="0">Domingo</option>
-                <option value="1">Segunda-feira</option>
-                <option value="2">Terça-feira</option>
-                <option value="3">Quarta-feira</option>
-                <option value="4">Quinta-feira</option>
-                <option value="5">Sexta-feira</option>
-                <option value="6">Sábado</option>
-              </Select>
-            </div>
-          )}
-
-          {(newSchedule.frequency === 'monthly' || newSchedule.frequency === 'quarterly' || newSchedule.frequency === 'yearly') && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Dia do Mês
-              </label>
-              <Input
-                type="number"
-                min="1"
-                max="31"
-                value={newSchedule.dayOfMonth || ''}
-                onChange={(e) => setNewSchedule(prev => ({ ...prev, dayOfMonth: parseInt(e.target.value) }))}
-                placeholder="1-31"
-              />
-            </div>
-          )}
-
-          {/* Recipients */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Destinatários *
-            </label>
-            <textarea
-              value={newSchedule.recipients?.join('\n') || ''}
-              onChange={(e) => setNewSchedule(prev => ({ 
-                ...prev, 
-                recipients: e.target.value.split('\n').filter(email => email.trim()) 
-              }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              placeholder="Digite um email por linha&#10;exemplo@reserveiviagens.com.br&#10;outro@reserveiviagens.com.br"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Digite um endereço de email por linha
-            </p>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreateSchedule}>
-              <Plus className="w-4 h-4 mr-2" />
-              Criar Agendamento
-            </Button>
+            <button
+              onClick={() => setShowNewForm(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Novo Agendamento</span>
+            </button>
           </div>
         </div>
-      </Modal>
 
-      {/* Edit Schedule Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        title="Editar Agendamento"
-        size="lg"
-      >
-        {editingSchedule && (
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nome do Agendamento
-                </label>
-                <Input
-                  value={editingSchedule.name}
-                  onChange={(e) => setEditingSchedule(prev => prev ? { ...prev, name: e.target.value } : null)}
-                  placeholder="Nome do agendamento"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Status
-                </label>
-                <Select
-                  value={editingSchedule.status}
-                  onValueChange={(value) => setEditingSchedule(prev => prev ? { ...prev, status: value as any } : null)}
+        {/* Tabs */}
+        <div className="bg-white rounded-lg shadow-sm border mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              {[
+                { id: 'schedules', label: 'Agendamentos', icon: <Calendar className="w-4 h-4" /> },
+                { id: 'executions', label: 'Execuções', icon: <Clock className="w-4 h-4" /> },
+                { id: 'new', label: 'Novo Agendamento', icon: <Plus className="w-4 h-4" /> }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
                 >
-                  <option value="active">Ativo</option>
-                  <option value="paused">Pausado</option>
-                  <option value="stopped">Parado</option>
-                </Select>
-              </div>
-            </div>
-
-            {/* Schedule Configuration */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Frequência
-                </label>
-                <Select
-                  value={editingSchedule.frequency}
-                  onValueChange={(value) => setEditingSchedule(prev => prev ? { ...prev, frequency: value as any } : null)}
-                >
-                  <option value="daily">Diário</option>
-                  <option value="weekly">Semanal</option>
-                  <option value="monthly">Mensal</option>
-                  <option value="quarterly">Trimestral</option>
-                  <option value="yearly">Anual</option>
-                </Select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Horário
-                </label>
-                <Input
-                  type="time"
-                  value={editingSchedule.time}
-                  onChange={(e) => setEditingSchedule(prev => prev ? { ...prev, time: e.target.value } : null)}
-                />
-              </div>
-            </div>
-
-            {/* Recipients */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Destinatários
-              </label>
-              <textarea
-                value={editingSchedule.recipients.join('\n')}
-                onChange={(e) => setEditingSchedule(prev => prev ? { 
-                  ...prev, 
-                  recipients: e.target.value.split('\n').filter(email => email.trim()) 
-                } : null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-                placeholder="Digite um email por linha"
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end space-x-3 pt-4 border-t">
-              <Button variant="outline" onClick={() => setShowEditModal(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleSaveEdit}>
-                <Edit className="w-4 h-4 mr-2" />
-                Salvar Alterações
-              </Button>
-            </div>
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </nav>
           </div>
-        )}
-      </Modal>
+
+          <div className="p-6">
+            {/* Schedules Tab */}
+            {activeTab === 'schedules' && (
+              <div>
+                {/* Filtros */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Buscar agendamentos..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        title="Buscar agendamentos por nome ou descrição"
+                      />
+                    </div>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value as any)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      title="Filtrar por status"
+                    >
+                      <option value="all">Todos</option>
+                      <option value="active">Ativos</option>
+                      <option value="inactive">Inativos</option>
+                    </select>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {filteredReports.length} de {scheduledReports.length} agendamentos
+                  </div>
+                </div>
+
+                {/* Lista de Agendamentos */}
+                <div className="space-y-4">
+                  {filteredReports.map(report => (
+                    <div key={report.id} className="bg-gray-50 rounded-lg p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{report.name}</h3>
+                            <div className="flex items-center space-x-2">
+                              {report.isActive ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  <div className="w-2 h-2 bg-green-400 rounded-full mr-1" />
+                                  Ativo
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full mr-1" />
+                                  Inativo
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-gray-600 mb-3">{report.description}</p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-500">Frequência:</span>
+                              <span className="ml-2 font-medium text-gray-900">
+                                {getFrequencyLabel(report.frequency, report.dayOfWeek, report.dayOfMonth)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Horário:</span>
+                              <span className="ml-2 font-medium text-gray-900">{report.time}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Próxima execução:</span>
+                              <span className="ml-2 font-medium text-gray-900">
+                                {new Date(report.nextRun).toLocaleString('pt-BR')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2 ml-4">
+                          <button
+                            onClick={() => handleRunNow(report.id)}
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                            title="Executar agora"
+                          >
+                            <Play className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleViewReport(report.id)}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="Visualizar relatório"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEditReport(report.id)}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="Editar agendamento"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleToggleActive(report.id)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              report.isActive 
+                                ? 'text-yellow-600 hover:bg-yellow-100' 
+                                : 'text-green-600 hover:bg-green-100'
+                            }`}
+                            title={report.isActive ? 'Pausar' : 'Ativar'}
+                          >
+                            {report.isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteReport(report.id)}
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                            title="Excluir agendamento"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-200 pt-4">
+                        <div className="flex items-center justify-between text-sm text-gray-600">
+                          <div>
+                            <span>Destinatários: </span>
+                            <span className="font-medium">{report.emailRecipients.join(', ')}</span>
+                          </div>
+                          <div>
+                            <span>Criado por: </span>
+                            <span className="font-medium">{report.createdBy}</span>
+                            <span className="ml-2">
+                              em {new Date(report.createdAt).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {filteredReports.length === 0 && (
+                  <div className="text-center py-12">
+                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Nenhum agendamento encontrado
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      Crie seu primeiro agendamento de relatório.
+                    </p>
+                    <button
+                      onClick={() => setShowNewForm(true)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Criar Agendamento
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Executions Tab */}
+            {activeTab === 'executions' && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  Histórico de Execuções
+                </h3>
+                <div className="space-y-4">
+                  {executions.map(execution => (
+                    <div key={execution.id} className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-white rounded-lg">
+                            {execution.status === 'success' && <CheckCircle className="w-5 h-5 text-green-600" />}
+                            {execution.status === 'failed' && <AlertCircle className="w-5 h-5 text-red-600" />}
+                            {execution.status === 'running' && <Clock className="w-5 h-5 text-blue-600" />}
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">{execution.reportName}</h4>
+                            <p className="text-sm text-gray-600">
+                              Iniciado em {new Date(execution.startedAt).toLocaleString('pt-BR')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          {execution.status === 'success' && execution.downloadUrl && (
+                            <button
+                              onClick={() => handleDownloadExecution(execution)}
+                              className="flex items-center space-x-2 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                            >
+                              <Download className="w-4 h-4" />
+                              <span>Download</span>
+                            </button>
+                          )}
+                          <div className="flex items-center space-x-2">
+                            <span className={`text-sm font-medium ${
+                              execution.status === 'success' ? 'text-green-600' :
+                              execution.status === 'failed' ? 'text-red-600' :
+                              'text-blue-600'
+                            }`}>
+                              {execution.status === 'success' ? 'Sucesso' :
+                               execution.status === 'failed' ? 'Falhou' :
+                               'Executando'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {execution.completedAt && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                          <div>
+                            <span>Duração: </span>
+                            <span className="font-medium">
+                              {execution.duration ? formatDuration(execution.duration) : '-'}
+                            </span>
+                          </div>
+                          <div>
+                            <span>Tamanho: </span>
+                            <span className="font-medium">
+                              {execution.fileSize ? formatFileSize(execution.fileSize) : '-'}
+                            </span>
+                          </div>
+                          <div>
+                            <span>Concluído em: </span>
+                            <span className="font-medium">
+                              {new Date(execution.completedAt).toLocaleString('pt-BR')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {execution.error && (
+                        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-sm text-red-600">{execution.error}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* New Schedule Tab */}
+            {activeTab === 'new' && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  Novo Agendamento
+                </h3>
+                <div className="max-w-2xl">
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nome do Relatório
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ex: Relatório Diário de Vendas"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        title="Nome para identificar o agendamento"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Descrição
+                      </label>
+                      <textarea
+                        placeholder="Descreva o propósito deste relatório..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        title="Descrição do relatório agendado"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Template
+                        </label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" title="Selecione o template do relatório">
+                          <option value="">Selecione um template</option>
+                          <option value="daily-sales">Relatório Diário de Vendas</option>
+                          <option value="weekly-customers">Relatório Semanal de Clientes</option>
+                          <option value="monthly-financial">Relatório Mensal Financeiro</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Frequência
+                        </label>
+                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" title="Selecione a frequência de execução">
+                          <option value="daily">Diário</option>
+                          <option value="weekly">Semanal</option>
+                          <option value="monthly">Mensal</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Horário de Execução
+                      </label>
+                      <input
+                        type="time"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        title="Horário para execução do relatório"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Destinatários (emails separados por vírgula)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="admin@rsv.com, vendas@rsv.com"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        title="Emails dos destinatários do relatório"
+                      />
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Criar Agendamento
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('schedules')}
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export { ReportScheduler };
-export type { ScheduledReport };
+export default ReportScheduler;
