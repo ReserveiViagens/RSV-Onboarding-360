@@ -1,0 +1,11 @@
+warning: in the working copy of '.vscode/extensions.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.vscode/settings.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/build-manifest.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/prerender-manifest.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/middleware-build-manifest.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/pages-manifest.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/pages/_document.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/pages/_error.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/pages/dashboard.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/pages/index.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.next/server/vendor-chunks/@swc.js', LF will be replaced by CRLF the next time Git touches it

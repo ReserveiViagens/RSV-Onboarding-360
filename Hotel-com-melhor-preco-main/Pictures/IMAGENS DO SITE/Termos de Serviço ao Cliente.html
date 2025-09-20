@@ -1,0 +1,808 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Serviço ao Cliente - Reservei Viagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #003580;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul, ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .contact-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f0f4f8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Termos de Serviço ao Cliente</h1>
+        <p><strong>Atualizado em 19 de abril de 2025</strong></p>
+        <p>Ao utilizar a plataforma Reservei Viagens, você concorda com estes Termos de Serviço, que regem o uso de nossos serviços e a relação entre você, a Reservei Viagens e os Prestadores de Serviços. Estes termos incluem um acordo para arbitragem individual obrigatória para a maioria dos litígios, salvo se você optar por não participar conforme descrito na seção A19. Leia atentamente.</p>
+
+        <h2>Índice</h2>
+        <ul>
+            <li><a href="#section-a">A. Todas as Experiências de Viagem</a></li>
+            <li><a href="#section-b">B. Hospedagens</a></li>
+            <li><a href="#section-c">C. Atrações</a></li>
+            <li><a href="#section-d">D. Aluguel de Carros</a></li>
+            <li><a href="#section-e">E. Voos</a></li>
+            <li><a href="#section-f">F. Transporte Privado e Público</a></li>
+            <li><a href="#dictionary">Dicionário Reservei Viagens</a></li>
+        </ul>
+
+        <h2 id="section-a">A. Todas as Experiências de Viagem</h2>
+
+        <h3>A1. Definições</h3>
+        <p>Algumas palavras têm significados específicos. Consulte o <a href="#dictionary">Dicionário Reservei Viagens</a> no final destes Termos.</p>
+
+        <h3>A2. Sobre estes Termos</h3>
+        <ol>
+            <li>Ao concluir uma Reserva, você aceita estes Termos e quaisquer outros fornecidos durante o processo de reserva. Estes Termos incluem um acordo para arbitragem individual obrigatória, o que significa que você concorda em submeter a maioria dos litígios relacionados à nossa Plataforma, ao uso dos serviços ou a estes Termos a uma arbitragem vinculativa, em vez de recorrer a tribunais. Você pode optar por não participar deste acordo de arbitragem seguindo os procedimentos na seção A19. Estes Termos também incluem a renúncia a ações coletivas ou julgamentos por júri.</li>
+            <li>Se qualquer parte destes Termos for (ou se tornar) inválida ou inexequível:
+                <ul>
+                    <li>ela será aplicada na extensão máxima permitida por lei;</li>
+                    <li>você ainda estará vinculado a todas as outras partes dos Termos.</li>
+                </ul>
+            </li>
+            <li>Estes Termos estão organizados assim:
+                <ul>
+                    <li>Seção A: Termos gerais para todos os tipos de Experiências de Viagem.</li>
+                    <li>Seções B a F: Termos específicos para cada tipo de Experiência de Viagem (Hospedagens, Atrações, Aluguel de Carros, Voos, Transporte Privado e Público).</li>
+                    <li>Em caso de discrepância entre termos gerais e específicos, os termos específicos prevalecerão.</li>
+                </ul>
+            </li>
+            <li>A versão em português destes Termos é a original. Em caso de disputa ou discrepância, a versão em português prevalecerá.</li>
+        </ol>
+
+        <h3>A3. Sobre a Reservei Viagens</h3>
+        <ol>
+            <li>Quando você reserva uma hospedagem, voo ou atração, a Reservei Viagens Ltda. fornece e é responsável pela Plataforma, mas não pela Experiência de Viagem em si (veja A4.4).</li>
+            <li>Quando você reserva um aluguel de carro ou transporte privado/público, a Reservei Viagens Ltda. fornece e é responsável pela Plataforma, mas não pela Experiência de Viagem em si (veja A4.4).</li>
+            <li>Trabalhamos com empresas que fornecem suporte local (ex.: Atendimento ao Cliente). Elas não:
+                <ul>
+                    <li>controlam ou gerenciam nossa Plataforma;</li>
+                    <li>possuem sua própria Plataforma;</li>
+                    <li>têm relação contratual com você;</li>
+                    <li>fornecem Experiências de Viagem;</li>
+                    <li>nos representam ou celebram contratos em nosso nome;</li>
+                    <li>operam como nossos agentes de serviço.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>A4. Nossa Plataforma</h3>
+        <ol>
+            <li>Tomamos cuidado razoável ao fornecer nossa Plataforma, mas não garantimos que tudo nela seja preciso (obtemos informações dos Prestadores de Serviços). Na medida permitida por lei, não nos responsabilizamos por erros, interrupções ou informações ausentes, embora façamos o possível para corrigi-los rapidamente.</li>
+            <li>Nossa Plataforma não é uma recomendação ou endosso de qualquer Prestador de Serviços ou seus produtos, serviços, instalações ou veículos.</li>
+            <li>Não somos parte dos termos entre você e o Prestador de Serviços. O Prestador de Serviços é o único responsável pela Experiência de Viagem.</li>
+            <li>Para fazer uma Reserva, você pode precisar criar uma Conta. Certifique-se de que todas as informações (incluindo detalhes de pagamento e contato) estejam corretas e atualizadas, ou você pode não conseguir acessar sua Experiência de Viagem. Você é responsável por tudo o que acontece com sua Conta, então não permita que outros a usem e mantenha seu nome de usuário e senha em segredo.</li>
+            <li>Mostraremos as ofertas disponíveis para você no idioma que considerarmos apropriado. Você pode mudar o idioma a qualquer momento.</li>
+            <li>Salvo indicação em contrário, você precisa ter pelo menos 16 anos para usar a Plataforma.</li>
+        </ol>
+
+        <h3>A5. Nossos Valores</h3>
+        <ol>
+            <li>Você deve:
+                <ul>
+                    <li>cumprir <a href="https://www.reserveiviagens.com.br/valores">Nossos Valores</a>;</li>
+                    <li>obedecer a todas as leis aplicáveis;</li>
+                    <li>cooperar com verificações antifraude e antilavagem de dinheiro;</li>
+                    <li>não usar a Plataforma para causar transtornos ou fazer Reservas falsas;</li>
+                    <li>usar a Experiência de Viagem e/ou Plataforma para seus propósitos pretendidos;</li>
+                    <li>não causar transtornos, danos ou se comportar de maneira inadequada com o pessoal do Prestador de Serviços (ou qualquer outra pessoa).</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>A6. Preços</h3>
+        <ol>
+            <li>Ao fazer uma Reserva, você concorda em pagar o custo da Experiência de Viagem, incluindo quaisquer impostos e taxas aplicáveis.</li>
+            <li>Alguns preços podem ser arredondados para o número inteiro mais próximo. O preço que você paga será baseado no preço original, não arredondado (a diferença será mínima).</li>
+            <li>Erros óbvios e enganos de impressão não são vinculativos. Por exemplo, se você reservar um carro premium ou uma suíte de luxo oferecida por engano por R$1, podemos cancelar a Reserva e reembolsar qualquer valor pago.</li>
+            <li>Um preço riscado indica o preço de uma Reserva semelhante sem a redução de preço aplicada (mesmas datas, políticas, qualidade de hospedagem/veículo/classe de viagem, etc.).</li>
+        </ol>
+
+        <h3>A7. Pagamento</h3>
+        <ol>
+            <li>Para alguns produtos/serviços, o Prestador de Serviços pode exigir um Pagamento Antecipado e/ou um pagamento durante sua Experiência de Viagem.
+                <ul>
+                    <li>Se organizarmos seu pagamento, nós (ou nossa afiliada no país de origem do pagamento) seremos responsáveis por gerenciar seu pagamento e garantir a conclusão da transação com o Prestador de Serviços. Nesse caso, seu pagamento constitui a quitação final do preço devido.</li>
+                    <li>Se o Prestador de Serviços cobrar você, isso geralmente será presencialmente no início da Experiência de Viagem, mas também pode ser, por exemplo, uma cobrança no cartão de crédito no momento da reserva ou no check-out da Hospedagem. Isso depende da política de Pagamento Antecipado do Prestador de Serviços, comunicada durante o processo de reserva.</li>
+                </ul>
+            </li>
+            <li>Se o Prestador de Serviços exigir um Pagamento Antecipado, ele pode ser cobrado ou pré-autorizado no momento da Reserva e pode ser não reembolsável. Verifique a política de Pagamento Antecipado do Prestador de Serviços antes de reservar (disponível durante o processo de reserva), pela qual não somos responsáveis.</li>
+            <li>Se você souber ou suspeitar de fraude ou uso não autorizado de seu Método de Pagamento, contate seu provedor de pagamento, que pode cobrir eventuais encargos resultantes, possivelmente por uma taxa.</li>
+            <li>Se a moeda selecionada na Plataforma não for a mesma do Prestador de Serviços, podemos:
+                <ul>
+                    <li>mostrar preços na sua moeda;</li>
+                    <li>oferecer a opção de Pagar na Sua Própria Moeda.</li>
+                </ul>
+                Você verá nossa Taxa de Conversão de Moeda durante o check-out, nos detalhes da Reserva em sua Conta ou no e-mail que enviamos. Seu emissor de cartão pode cobrar uma taxa de transação estrangeira.</li>
+            <li>Armazenaremos os detalhes do seu Método de Pagamento para transações futuras após obtermos seu consentimento.</li>
+        </ol>
+
+        <h3>A8. Políticas</h3>
+        <ol>
+            <li>Ao fazer uma Reserva, você aceita as políticas aplicáveis exibidas no processo de reserva. Você encontrará a política de cancelamento e outras políticas do Prestador de Serviços (ex.: requisitos de idade, depósitos de segurança/danos, suplementos para grupos, camas extras, café da manhã, animais de estimação, cartões aceitos, etc.) em nossa Plataforma, nas páginas de informações do Prestador de Serviços, durante o processo de reserva, nas letras miúdas e/ou no e-mail de confirmação ou ingresso (se aplicável).</li>
+            <li>Se você cancelar uma Reserva ou não comparecer, qualquer taxa de cancelamento/não comparecimento ou reembolso dependerá da política de cancelamento/não comparecimento do Prestador de Serviços.</li>
+            <li>Algumas Reservas não podem ser canceladas gratuitamente, enquanto outras só podem ser canceladas gratuitamente antes de um prazo.</li>
+            <li>Se você reservar uma Experiência de Viagem pagando antecipadamente (incluindo todos os componentes de preço e/ou depósito de danos, se aplicável), o Prestador de Serviços pode cancelar a Reserva sem aviso se não conseguir cobrar o saldo na data especificada. Se o fizer, qualquer pagamento não reembolsável que você tenha feito só será reembolsado a critério deles. É sua responsabilidade garantir que o pagamento seja feito a tempo, que os detalhes do cartão sejam corretos e que haja saldo suficiente.</li>
+            <li>Se você acha que não chegará a tempo, contate o Prestador de Serviços e informe quando eles podem esperar você para evitar o cancelamento da Reserva. Se você se atrasar, não somos responsáveis pelas consequências (ex.: cancelamento da Reserva ou taxas cobradas pelo Prestador de Serviços).</li>
+            <li>Como responsável pela Reserva, você é responsável pelas ações e comportamento (em relação à Experiência de Viagem) de todos no grupo. Você também é responsável por obter a permissão deles antes de nos fornecer seus dados pessoais.</li>
+        </ol>
+
+        <h3>A9. Privacidade e Cookies</h3>
+        <ol>
+            <li>Se você reservar uma hospedagem, voo ou atração, leia nossa <a href="https://www.reserveiviagens.com.br/politica-de-privacidade">Política de Privacidade e Cookies</a> para mais informações sobre privacidade, cookies e como podemos contatá-lo e processar dados pessoais.</li>
+            <li>Se você reservar transporte terrestre, entre em contato conosco para obter informações sobre como processamos seus dados pessoais.</li>
+        </ol>
+
+        <h3>A10. Solicitações de Acessibilidade</h3>
+        <ol>
+            <li>Se você tiver solicitações de acessibilidade:
+                <ul>
+                    <li>sobre nossa Plataforma e/ou serviços, contate nossa equipe de Atendimento ao Cliente;</li>
+                    <li>sobre sua Experiência de Viagem (acesso para cadeirantes, banheiras acessíveis, etc.), contate o Prestador de Serviços ou o aeroporto, estação de trem, etc.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>A11. Seguros</h3>
+        <ol>
+            <li>Se você contratou um seguro por meio de nossa Plataforma, consulte os documentos da apólice para os termos e informações adicionais. Estes Termos não se aplicam a seguros.</li>
+        </ol>
+
+        <h3>A12. Programa de Fidelidade</h3>
+        <ol>
+            <li>A Taxa de Fidelidade é uma tarifa com desconto oferecida por Prestadores de Serviços participantes para certos produtos/serviços.</li>
+            <li>As Taxas de Fidelidade são para membros do programa de fidelidade da Reservei Viagens. Não há taxas de adesão, e é fácil se tornar membro – basta criar uma Conta. A adesão e as tarifas não são transferíveis. A adesão está vinculada a uma Conta específica e pode ser associada a campanhas ou incentivos específicos.</li>
+            <li>Existem diferentes “Níveis de Fidelidade” com base no número de Reservas de Hospedagem feitas em um determinado período. Cada nível oferece diferentes recompensas de viagem.</li>
+            <li>Podemos alterar qualquer recurso do programa de fidelidade, incluindo os níveis de adesão e a estrutura do programa.</li>
+            <li>Para mais detalhes, visite <a href="https://www.reserveiviagens.com.br/fidelidade">https://www.reserveiviagens.com.br/fidelidade</a>.</li>
+        </ol>
+
+        <h3>A13. Recompensas, Créditos e Carteira</h3>
+        <ol>
+            <li>Podemos emitir Recompensas a nosso critério, sujeitas a estes Termos e aos Critérios Individuais de Recompensa. Se cometermos um erro administrativo no cálculo de suas Recompensas ou na conversão de moedas, podemos corrigir os saldos exibidos.</li>
+            <li><strong>Como obter Recompensas:</strong> Você pode, por exemplo, receber uma Recompensa ao reservar em um hotel participante ou fazer um número específico de Reservas em um período. Quando uma Recompensa estiver disponível, explicaremos as condições específicas e como usá-la.</li>
+            <li><strong>Onde encontrar suas Recompensas:</strong> Após receber uma ou mais Recompensas, você encontrará um link “Recompensas e Carteira” no menu da sua Conta. Na aba “Recompensas”, você verá todas as Recompensas conquistadas, ações necessárias para obtê-las e outros termos e condições.</li>
+            <li><strong>Tipos de Recompensas:</strong> As Recompensas podem ser (a) Créditos na sua Carteira ou (b) algo diferente (ex.: reembolso em cartão de crédito ou cupom). Explicaremos cada Recompensa no momento apropriado.</li>
+            <li><strong>Como obter Créditos:</strong> Os Créditos geralmente são emitidos como resultado de uma Recompensa, mas podemos emiti-los por outros motivos, como quando uma Experiência de Viagem não atende aos nossos padrões.</li>
+            <li><strong>Onde encontrar seus Créditos:</strong> Após receber Créditos, você verá um link “Recompensas e Carteira” no menu da sua Conta. Na aba “Carteira”, você verá o saldo total de Créditos (dividido em Créditos de Viagem e Créditos em Dinheiro, se aplicável), quando foram recebidos ou gastos e quando expiram. Para Créditos em Dinheiro, você verá um link para sacá-los.</li>
+            <li><strong>Tipos de Créditos:</strong> Créditos de Viagem só podem ser usados em certas Experiências de Viagem (mostraremos quais). Créditos em Dinheiro podem ser sacados para seu Método de Pagamento ou usados em qualquer Experiência de Viagem que aceite Créditos de Viagem.</li>
+        </ol>
+
+        <h3>A14. Direitos de Propriedade Intelectual</h3>
+        <ol>
+            <li>Salvo indicação em contrário, todos os direitos em nossa Plataforma (tecnologia, conteúdo, marcas, aparência, etc.) pertencem à Reservei Viagens ou seus licenciadores. Ao usar nossa Plataforma, você concorda em usá-la apenas para seu propósito pretendido e respeitar as condições abaixo.</li>
+            <li>Você não pode monitorar, copiar, raspar, baixar, reproduzir ou usar qualquer coisa em nossa Plataforma para fins comerciais sem permissão escrita da Reservei Viagens ou seus licenciadores.</li>
+            <li>Monitoramos todas as visitas à nossa Plataforma e bloquearemos qualquer pessoa (ou sistema automatizado) que suspeitarmos de:
+                <ul>
+                    <li>realizar uma quantidade excessiva de pesquisas;</li>
+                    <li>usar dispositivos ou softwares para coletar preços ou outras informações;</li>
+                    <li>fazer qualquer coisa que cause estresse indevido à nossa Plataforma.</li>
+                </ul>
+            </li>
+            <li>Ao fazer upload de fotos em nossa Plataforma (ex.: para uma avaliação), você confirma que ela cumpre nossos critérios e que:
+                <ul>
+                    <li>é verdadeira (ex.: não foi alterada ou não é de uma propriedade diferente);</li>
+                    <li>não contém vírus;</li>
+                    <li>você tem permissão para compartilhá-la conosco;</li>
+                    <li>podemos usá-la em nossa Plataforma e para fins comerciais (incluindo promocionais), em qualquer lugar, para sempre;</li>
+                    <li>não infringe os direitos de privacidade de outras pessoas;</li>
+                    <li>você aceita total responsabilidade por quaisquer reivindicações legais contra a Reservei Viagens relacionadas a ela.</li>
+                </ul>
+            </li>
+            <li>Não somos responsáveis por fotos carregadas em nossa Plataforma e podemos removê-las a nosso critério.</li>
+        </ol>
+
+        <h3>A15. E se algo der errado?</h3>
+        <ol>
+            <li>Se você tiver uma dúvida ou reclamação, contate nossa equipe de Atendimento ao Cliente pelo e-mail <a href="mailto:comercial@reserveiviagens.com.br">comercial@reserveiviagens.com.br</a> ou WhatsApp (64) 99319-7555. Forneça:
+                <ul>
+                    <li>o número de confirmação da Reserva, seus dados de contato e o e-mail usado na reserva;</li>
+                    <li>um resumo do problema, incluindo como gostaria que o ajudássemos;</li>
+                    <li>quaisquer documentos de suporte (ex.: extrato bancário, fotos, recibos).</li>
+                </ul>
+            </li>
+            <li>Todas as dúvidas e reclamações são registradas, e as mais urgentes são tratadas com maior prioridade.</li>
+            <li>Se você for residente do Brasil e não estiver satisfeito com a forma como lidamos com sua reclamação, pode registrar uma reclamação na Plataforma Brasileira de Resolução de Disputas do Consumidor (<a href="http://consumidor.gov.br">consumidor.gov.br</a>).</li>
+            <li>Tentamos resolver disputas internamente e não somos obrigados a submeter a procedimentos alternativos de resolução de disputas por provedores independentes.</li>
+        </ol>
+
+        <h3>A16. Comunicação com o Prestador de Serviços</h3>
+        <ol>
+            <li>Podemos ajudar você a se comunicar com o Prestador de Serviços, mas não garantimos que eles lerão ou agirão conforme sua solicitação. O fato de você contatá-los ou eles contatarem você não significa que você tenha base para ações legais.</li>
+        </ol>
+
+        <h3>A17. Medidas contra Comportamento Inaceitável</h3>
+        <ol>
+            <li>Temos o direito de impedir que você faça Reservas, cancelar Reservas feitas ou proibir o uso de nossa Plataforma, Atendimento ao Cliente ou Conta, se, em nossa opinião, houver uma boa razão, como:
+                <ul>
+                    <li>fraude ou abuso;</li>
+                    <li>descumprimento de Nossos Valores ou leis aplicáveis;</li>
+                    <li>comportamento inadequado ou ilegal (ex.: violência, ameaças, invasão de privacidade) em relação a nós, empresas parceiras ou qualquer outra pessoa.</li>
+                </ul>
+            </li>
+            <li>Se cancelarmos uma Reserva por esses motivos, você não terá direito a reembolso. Podemos informar o motivo do cancelamento, salvo se isso violar leis aplicáveis ou impedir a detecção de fraudes. Se acreditar que cancelamos sua Reserva incorretamente, contate nossa equipe de Atendimento ao Cliente.</li>
+        </ol>
+
+        <h3>A18. Limitação de Responsabilidade</h3>
+        <ol>
+            <li>Estes Termos limitam nossa responsabilidade conforme permitido por lei. Nada nestes Termos limitará nossa responsabilidade (ou do Prestador de Serviços) por (i) negligência que resulte em morte ou lesão pessoal ou (ii) fraude, má conduta intencional ou negligência grave. A Reservei Viagens não será responsável por perdas fora dos direitos e responsabilidades descritos nesta seção, salvo se causadas por nossa violação destes Termos. Como exemplos não limitativos, não seremos responsáveis por:
+                <ul>
+                    <li>perdas indiretas ou consequenciais;</li>
+                    <li>perda de lucros, uso, dados, receitas, oportunidades de negócios ou boa vontade;</li>
+                    <li>danos especiais, punitivos ou exemplares;</li>
+                    <li>informações imprecisas sobre um Prestador de Serviços;</li>
+                    <li>produtos, serviços ou ações de um Prestador de Serviços ou parceiro comercial;</li>
+                    <li>erros em e-mails, números de telefone ou cartões de crédito (salvo se forem nossa culpa);</li>
+                    <li>força maior ou eventos fora de nosso controle.</li>
+                </ul>
+            </li>
+            <li>Se você violar estes Termos e/ou os termos do Prestador de Serviços, na medida permitida por lei:
+                <ul>
+                    <li>não seremos responsáveis por quaisquer custos incorridos por você;</li>
+                    <li>você não terá direito a reembolso.</li>
+                </ul>
+            </li>
+            <li>O custo da sua Reserva, conforme mostrado no e-mail de confirmação, é o máximo que nós ou qualquer Prestador de Serviços seremos responsáveis, seja por um evento ou uma série de eventos. Essas limitações de responsabilidade se aplicam a todas as formas de ação legal.</li>
+            <li>Salvo disposição expressa, a Reservei Viagens não faz representações, garantias ou compromissos relacionados aos produtos ou serviços dos Prestadores de Serviços. Você assume a responsabilidade por garantir que esses produtos ou serviços sejam adequados aos seus objetivos. Na medida permitida por lei, a Reservei Viagens renuncia a todas as garantias, incluindo garantias de comercialização e adequação a um propósito específico.</li>
+            <li>Nada nestes Termos dará a terceiros, exceto ao Prestador de Serviços, qualquer direito.</li>
+        </ol>
+
+        <h3>A19. Acordo de Arbitragem</h3>
+        <p>Leia este acordo de arbitragem cuidadosamente, pois ele pode afetar seus direitos. Ele estipula que a maioria dos litígios será resolvida por arbitragem vinculativa, em vez de ações judiciais. Este acordo permanecerá em vigor após o término destes Termos.</p>
+        <ol>
+            <li><strong>Lei Aplicável e Jurisdição:</strong> Este acordo de arbitragem e estes Termos são regidos pela legislação brasileira, conforme a Lei nº 9.307/1996 (Lei de Arbitragem). Quaisquer litígios ou reclamações não sujeitos a arbitragem serão resolvidos exclusivamente nos tribunais de Cuiabá, MT, e você consente com a jurisdição pessoal nesses tribunais. Se a lei local aplicável impedir que um litígio seja resolvido nesses tribunais, os tribunais locais terão jurisdição.</li>
+            <li><strong>Escopo:</strong> Este acordo de arbitragem abrange todas as Reclamações (definidas abaixo) decorrentes do uso da Plataforma, serviços fornecidos pela Reservei Viagens ou sua relação conosco, incluindo a interpretação e o escopo deste acordo. As Reclamações incluem litígios baseados em contrato, responsabilidade civil, estatuto, fraude, má representação ou qualquer outro veículo legal, salvo exceções expressas abaixo.</li>
+            <li><strong>Procedimento de Exclusão:</strong> Você pode optar por não participar deste acordo de arbitragem dentro de 30 dias após a primeira utilização da Plataforma, serviços ou transação com a Reservei Viagens, enviando uma notificação por escrito para <a href="mailto:comercial@reserveiviagens.com.br">comercial@reserveiviagens.com.br</a> com a mensagem: “Arbitragem – Notificação de Exclusão”. A notificação deve ser recebida dentro de 3 dias após o prazo de 30 dias.</li>
+            <li><strong>Resolução Pré-Litígio:</strong> Antes de iniciar qualquer litígio, você deve nos dar a oportunidade de resolver reclamações enviando-as por escrito para <a href="mailto:comercial@reserveiviagens.com.br">comercial@reserveiviagens.com.br</a> com: (1) seu nome, (2) endereço, (3) e-mail usado na reserva, (4) número da reserva, (5) data da reserva, (6) nome da propriedade reservada, (7) descrição do problema, (8) resolução desejada, e a mensagem deve começar com “Solicitação Sob Acordo de Arbitragem”. Se não resolvermos a reclamação em 60 dias, você poderá buscar alívio conforme este acordo.</li>
+            <li><strong>Procedimento de Arbitragem:</strong> A arbitragem será conduzida pela Câmara de Mediação e Arbitragem de Cuiabá (CMAC) ou outra câmara escolhida por nós, se a CMAC não puder administrar. A Reservei Viagens pagará todas as taxas de arbitragem, exceto a taxa inicial de apresentação, que será paga por você. Para reclamações abaixo de R$5.000, reembolsaremos a taxa inicial mediante solicitação escrita com prova de insuficiência de fundos. A arbitragem será conduzida em português, com base em submissões escritas para reclamações abaixo de R$50.000, salvo se você solicitar uma audiência presencial ou por telefone, ou se o árbitro determinar que é necessário.</li>
+            <li><strong>Decisão de Arbitragem:</strong> O árbitro poderá conceder alívio declaratório ou injuntivo apenas em seu favor individualmente, sem afetar outros clientes da Reservei Viagens. A arbitragem será confidencial, e nenhuma parte pode divulgar sua existência, conteúdo ou resultados, exceto conforme exigido por lei.</li>
+            <li><strong>Exceções ao Acordo de Arbitragem:</strong> As seguintes reclamações não estão sujeitas à arbitragem e serão levadas a tribunais competentes:
+                <ul>
+                    <li>reivindicações de violação de direitos de propriedade intelectual;</li>
+                    <li>ações buscando alívio injuntivo emergencial por circunstâncias graves;</li>
+                    <li>pedidos de alívio injuntivo público, quando permitido por lei.</li>
+                </ul>
+            </li>
+            <li><strong>Renúncia a Ações Coletivas:</strong> Você e a Reservei Viagens concordam que qualquer procedimento, seja em arbitragem ou tribunal, será conduzido apenas individualmente, não em ações coletivas, consolidadas ou representativas, exceto para alívio injuntivo conforme descrito. Se esta renúncia for considerada inexequível, o acordo de arbitragem não se aplicará a você.</li>
+            <li><strong>Renúncia a Júri:</strong> Se uma reclamação for levada a tribunal, você e nós renunciamos ao direito a um julgamento por júri.</li>
+        </ol>
+
+        <h3>A20. Arranjos de Viagem Vinculados</h3>
+        <ol>
+            <li>Se, após selecionar e pagar por um serviço de viagem, você reservar serviços adicionais para sua viagem durante a mesma visita à Plataforma, ou por meio de um link fornecido por nós dentro de 24 horas após a confirmação da Reserva inicial, você não se beneficiará dos direitos aplicáveis a pacotes sob a legislação brasileira ou da UE/UK. Portanto, não seremos responsáveis pelo desempenho adequado desses serviços de viagem. Para problemas, contate o Prestador de Serviços relevante.</li>
+            <li>Nesses casos, os serviços de viagem formarão um arranjo de viagem vinculado, não um pacote. A Reservei Viagens possui proteção para reembolsar seus pagamentos por serviços não realizados devido à nossa insolvência, mas isso não cobre a insolvência do Prestador de Serviços.</li>
+        </ol>
+
+        <h2 id="section-b">B. Hospedagens</h2>
+        <h3>B1. Escopo desta Seção</h3>
+        <ol>
+            <li>Esta seção contém os termos específicos para produtos e serviços de Hospedagens.</li>
+        </ol>
+
+        <h3>B2. Relacionamento Contratual</h3>
+        <ol>
+            <li>Quando você faz uma Reserva, ela é diretamente com o Prestador de Serviços. Não somos uma “parte contratual” da sua Reserva.</li>
+            <li>A Reservei Viagens Ltda. possui e opera a Plataforma.</li>
+            <li>Nossa Plataforma exibe apenas Hospedagens que têm uma relação comercial conosco, e não necessariamente todos os seus produtos ou serviços.</li>
+            <li>As informações sobre Prestadores de Serviços (ex.: instalações, regras da casa, medidas de sustentabilidade) e suas Experiências de Viagem (ex.: preços, disponibilidade, políticas de cancelamento) são baseadas no que eles nos fornecem. Eles são responsáveis por garantir que sejam precisas e atualizadas.</li>
+        </ol>
+
+        <h3>B3. O que faremos</h3>
+        <ol>
+            <li>Fornecemos a Plataforma na qual os Prestadores de Serviços podem promover e vender suas Hospedagens, e	<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Serviço ao Cliente - Reservei Viagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #003580;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul, ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .contact-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f0f4f8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Termos de Serviço ao Cliente</h1>
+        <p><strong>Atualizado em 19 de abril de 2025</strong></p>
+        <p>Ao utilizar a plataforma Reservei Viagens, você concorda com estes Termos de Serviço, que regem o uso de nossos serviços e a relação entre você, a Reservei Viagens e os Prestadores de Serviços. Estes termos incluem um acordo para arbitragem individual obrigatória para a maioria dos litígios, salvo se você optar por não participar conforme descrito na seção A19. Leia atentamente.</p>
+
+        <h2>Índice</h2>
+        <ul>
+            <li><a href="#section-a">A. Todas as Experiências de Viagem</a></li>
+            <li><a href="#section-b">B. Hospedagens</a></li>
+            <li><a href="#section-c">C. Atrações</a></li>
+            <li><a href="#section-d">D. Aluguel de Carros</a></li>
+            <li><a href="#section-e">E. Voos</a></li>
+            <li><a href="#section-f">F. Transporte Privado e Público</a></li>
+            <li><a href="#dictionary">Dicionário Reservei Viagens</a></li>
+        </ul>
+
+        <h2 id="section-a">A. Todas as Experiências de Viagem</h2>
+
+        <h3>A1. Definições</h3>
+        <p>Algumas palavras têm significados específicos. Consulte o <a href="#dictionary">Dicionário Reservei Viagens</a> no final destes Termos.</p>
+
+        <h3>A2. Sobre estes Termos</h3>
+        <ol>
+            <li>Ao concluir uma Reserva, você aceita estes Termos e quaisquer outros fornecidos durante o processo de reserva. Estes Termos incluem um acordo para arbitragem individual obrigatória, o que significa que você concorda em submeter a maioria dos litígios relacionados à nossa Plataforma, ao uso dos serviços ou a estes Termos a uma arbitragem vinculativa, em vez de recorrer a tribunais. Você pode optar por não participar deste acordo de arbitragem seguindo os procedimentos na seção A19. Estes Termos também incluem a renúncia a ações coletivas ou julgamentos por júri.</li>
+            <li>Se qualquer parte destes Termos for (ou se tornar) inválida ou inexequível:
+                <ul>
+                    <li>ela será aplicada na extensão máxima permitida por lei;</li>
+                    <li>você ainda estará vinculado a todas as outras partes dos Termos.</li>
+                </ul>
+            </li>
+            <li>Estes Termos estão organizados assim:
+                <ul>
+                    <li>Seção A: Termos gerais para todos os tipos de Experiências de Viagem.</li>
+                    <li>Seções B a F: Termos específicos para cada tipo de Experiência de Viagem (Hospedagens, Atrações, Aluguel de Carros, Voos, Transporte Privado e Público).</li>
+                    <li>Em caso de discrepância entre termos gerais e específicos, os termos específicos prevalecerão.</li>
+                </ul>
+            </li>
+            <li>A versão em português destes Termos é a original. Em caso de disputa ou discrepância, a versão em português prevalecerá.</li>
+        </ol>
+
+        <h3>A3. Sobre a Reservei Viagens</h3>
+        <ol>
+            <li>Quando você reserva uma hospedagem, voo ou atração, a Reservei Viagens Ltda. fornece e é responsável pela Plataforma, mas não pela Experiência de Viagem em si (veja A4.4).</li>
+            <li>Quando você reserva um aluguel de carro ou transporte privado/público, a Reservei Viagens Ltda. fornece e é responsável pela Plataforma, mas não pela Experiência de Viagem em si (veja A4.4).</li>
+            <li>Trabalhamos com empresas que fornecem suporte local (ex.: Atendimento ao Cliente). Elas não:
+                <ul>
+                    <li>controlam ou gerenciam nossa Plataforma;</li>
+                    <li>possuem sua própria Plataforma;</li>
+                    <li>têm relação contratual com você;</li>
+                    <li>fornecem Experiências de Viagem;</li>
+                    <li>nos representam ou celebram contratos em nosso nome;</li>
+                    <li>operam como nossos agentes de serviço.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>A4. Nossa Plataforma</h3>
+        <ol>
+            <li>Tomamos cuidado razoável ao fornecer nossa Plataforma, mas não garantimos que tudo nela seja preciso (obtemos informações dos Prestadores de Serviços). Na medida permitida por lei, não nos responsabilizamos por erros, interrupções ou informações ausentes, embora façamos o possível para corrigi-los rapidamente.</li>
+            <li>Nossa Plataforma não é uma recomendação ou endosso de qualquer Prestador de Serviços ou seus produtos, serviços, instalações ou veículos.</li>
+            <li>Não somos parte dos termos entre você e o Prestador de Serviços. O Prestador de Serviços é o único responsável pela Experiência de Viagem.</li>
+            <li>Para fazer uma Reserva, você pode precisar criar uma Conta. Certifique-se de que todas as informações (incluindo detalhes de pagamento e contato) estejam corretas e atualizadas, ou você pode não conseguir acessar sua Experiência de Viagem. Você é responsável por tudo o que acontece com sua Conta, então não permita que outros a usem e mantenha seu nome de usuário e senha em segredo.</li>
+            <li>Mostraremos as ofertas disponíveis para você no idioma que considerarmos apropriado. Você pode mudar o idioma a qualquer momento.</li>
+            <li>Salvo indicação em contrário, você precisa ter pelo menos 16 anos para usar a Plataforma.</li>
+        </ol>
+
+        <h3>A5. Nossos Valores</h3>
+        <ol>
+            <li>Você deve:
+                <ul>
+                    <li>cumprir <a href="https://www.reserveiviagens.com.br/valores">Nossos Valores</a>;</li>
+                    <li>obedecer a todas as leis aplicáveis;</li>
+                    <li>cooperar com verificações antifraude e antilavagem de dinheiro;</li>
+                    <li>não usar a Plataforma para causar transtornos ou fazer Reservas falsas;</li>
+                    <li>usar a Experiência de Viagem e/ou Plataforma para seus propósitos pretendidos;</li>
+                    <li>não causar transtornos, danos ou se comportar de maneira inadequada com o pessoal do Prestador de Serviços (ou qualquer outra pessoa).</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>A6. Preços</h3>
+        <ol>
+            <li>Ao fazer uma Reserva, você concorda em pagar o custo da Experiência de Viagem, incluindo quaisquer impostos e taxas aplicáveis.</li>
+            <li>Alguns preços podem ser arredondados para o número inteiro mais próximo. O preço que você paga será baseado no preço original, não arredondado (a diferença será mínima).</li>
+            <li>Erros óbvios e enganos de impressão não são vinculativos. Por exemplo, se você reservar um carro premium ou uma suíte de luxo oferecida por engano por R$1, podemos cancelar a Reserva e reembolsar qualquer valor pago.</li>
+            <li>Um preço riscado indica o preço de uma Reserva semelhante sem a redução de preço aplicada (mesmas datas, políticas, qualidade de hospedagem/veículo/classe de viagem, etc.).</li>
+        </ol>
+
+        <h3>A7. Pagamento</h3>
+        <ol>
+            <li>Para alguns produtos/serviços, o Prestador de Serviços pode exigir um Pagamento Antecipado e/ou um pagamento durante sua Experiência de Viagem.
+                <ul>
+                    <li>Se organizarmos seu pagamento, nós (ou nossa afiliada no país de origem do pagamento) seremos responsáveis por gerenciar seu pagamento e garantir a conclusão da transação com o Prestador de Serviços. Nesse caso, seu pagamento constitui a quitação final do preço devido.</li>
+                    <li>Se o Prestador de Serviços cobrar você, isso geralmente será presencialmente no início da Experiência de Viagem, mas também pode ser, por exemplo, uma cobrança no cartão de crédito no momento da reserva ou no check-out da Hospedagem. Isso depende da política de Pagamento Antecipado do Prestador de Serviços, comunicada durante o processo de reserva.</li>
+                </ul>
+            </li>
+            <li>Se o Prestador de Serviços exigir um Pagamento Antecipado, ele pode ser cobrado ou pré-autorizado no momento da Reserva e pode ser não reembolsável. Verifique a política de Pagamento Antecipado do Prestador de Serviços antes de reservar (disponível durante o processo de reserva), pela qual não somos responsáveis.</li>
+            <li>Se você souber ou suspeitar de fraude ou uso não autorizado de seu Método de Pagamento, contate seu provedor de pagamento, que pode cobrir eventuais encargos resultantes, possivelmente por uma taxa.</li>
+            <li>Se a moeda selecionada na Plataforma não for a mesma do Prestador de Serviços, podemos:
+                <ul>
+                    <li>mostrar preços na sua moeda;</li>
+                    <li>oferecer a opção de Pagar na Sua Própria Moeda.</li>
+                </ul>
+                Você verá nossa Taxa de Conversão de Moeda durante o check-out, nos detalhes da Reserva em sua Conta ou no e-mail que enviamos. Seu emissor de cartão pode cobrar uma taxa de transação estrangeira.</li>
+            <li>Armazenaremos os detalhes do seu Método de Pagamento para transações futuras após obtermos seu consentimento.</li>
+        </ol>
+
+        <h3>A8. Políticas</h3>
+        <ol>
+            <li>Ao fazer uma Reserva, você aceita as políticas aplicáveis exibidas no processo de reserva. Você encontrará a política de cancelamento e outras políticas do Prestador de Serviços (ex.: requisitos de idade, depósitos de segurança/danos, suplementos para grupos, camas extras, café da manhã, animais de estimação, cartões aceitos, etc.) em nossa Plataforma, nas páginas de informações do Prestador de Serviços, durante o processo de reserva, nas letras miúdas e/ou no e-mail de confirmação ou ingresso (se aplicável).</li>
+            <li>Se você cancelar uma Reserva ou não comparecer, qualquer taxa de cancelamento/não comparecimento ou reembolso dependerá da política de cancelamento/não comparecimento do Prestador de Serviços.</li>
+            <li>Algumas Reservas não podem ser canceladas gratuitamente, enquanto outras só podem ser canceladas gratuitamente antes de um prazo.</li>
+            <li>Se você reservar uma Experiência de Viagem pagando antecipadamente (incluindo todos os componentes de preço e/ou depósito de danos, se aplicável), o Prestador de Serviços pode cancelar a Reserva sem aviso se não conseguir cobrar o saldo na data especificada. Se o fizer, qualquer pagamento não reembolsável que você tenha feito só será reembolsado a critério deles. É sua responsabilidade garantir que o pagamento seja feito a tempo, que os detalhes do cartão sejam corretos e que haja saldo suficiente.</li>
+            <li>Se você acha que não chegará a tempo, contate o Prestador de Serviços e informe quando eles podem esperar você para evitar o cancelamento da Reserva. Se você se atrasar, não somos responsáveis pelas consequências (ex.: cancelamento da Reserva ou taxas cobradas pelo Prestador de Serviços).</li>
+            <li>Como responsável pela Reserva, você é responsável pelas ações e comportamento (em relação à Experiência de Viagem) de todos no grupo. Você também é responsável por obter a permissão deles antes de nos fornecer seus dados pessoais.</li>
+        </ol>
+
+        <h3>A9. Privacidade e Cookies</h3>
+        <ol>
+            <li>Se você reservar uma hospedagem, voo ou atração, leia nossa <a href="https://www.reserveiviagens.com.br/politica-de-privacidade">Política de Privacidade e Cookies</a> para mais informações sobre privacidade, cookies e como podemos contatá-lo e processar dados pessoais.</li>
+            <li>Se você reservar transporte terrestre, entre em contato conosco para obter informações sobre como processamos seus dados pessoais.</li>
+        </ol>
+
+        <h3>A10. Solicitações de Acessibilidade</h3>
+        <ol>
+            <li>Se você tiver solicitações de acessibilidade:
+                <ul>
+                    <li>sobre nossa Plataforma e/ou serviços, contate nossa equipe de Atendimento ao Cliente;</li>
+                    <li>sobre sua Experiência de Viagem (acesso para cadeirantes, banheiras acessíveis, etc.), contate o Prestador de Serviços ou o aeroporto, estação de trem, etc.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>A11. Seguros</h3>
+        <ol>
+            <li>Se você contratou um seguro por meio de nossa Plataforma, consulte os documentos da apólice para os termos e informações adicionais. Estes Termos não se aplicam a seguros.</li>
+        </ol>
+
+        <h3>A12. Programa de Fidelidade</h3>
+        <ol>
+            <li>A Taxa de Fidelidade é uma tarifa com desconto oferecida por Prestadores de Serviços participantes para certos produtos/serviços.</li>
+            <li>As Taxas de Fidelidade são para membros do programa de fidelidade da Reservei Viagens. Não há taxas de adesão, e é fácil se tornar membro – basta criar uma Conta. A adesão e as tarifas não são transferíveis. A adesão está vinculada a uma Conta específica e pode ser associada a campanhas ou incentivos específicos.</li>
+            <li>Existem diferentes “Níveis de Fidelidade” com base no número de Reservas de Hospedagem feitas em um determinado período. Cada nível oferece diferentes recompensas de viagem.</li>
+            <li>Podemos alterar qualquer recurso do programa de fidelidade, incluindo os níveis de adesão e a estrutura do programa.</li>
+            <li>Para mais detalhes, visite <a href="https://www.reserveiviagens.com.br/fidelidade">https://www.reserveiviagens.com.br/fidelidade</a>.</li>
+        </ol>
+
+        <h3>A13. Recompensas, Créditos e Carteira</h3>
+        <ol>
+            <li>Podemos emitir Recompensas a nosso critério, sujeitas a estes Termos e aos Critérios Individuais de Recompensa. Se cometermos um erro administrativo no cálculo de suas Recompensas ou na conversão de moedas, podemos corrigir os saldos exibidos.</li>
+            <li><strong>Como obter Recompensas:</strong> Você pode, por exemplo, receber uma Recompensa ao reservar em um hotel participante ou fazer um número específico de Reservas em um período. Quando uma Recompensa estiver disponível, explicaremos as condições específicas e como usá-la.</li>
+            <li><strong>Onde encontrar suas Recompensas:</strong> Após receber uma ou mais Recompensas, você encontrará um link “Recompensas e Carteira” no menu da sua Conta. Na aba “Recompensas”, você verá todas as Recompensas conquistadas, ações necessárias para obtê-las e outros termos e condições.</li>
+            <li><strong>Tipos de Recompensas:</strong> As Recompensas podem ser (a) Créditos na sua Carteira ou (b) algo diferente (ex.: reembolso em cartão de crédito ou cupom). Explicaremos cada Recompensa no momento apropriado.</li>
+            <li><strong>Como obter Créditos:</strong> Os Créditos geralmente são emitidos como resultado de uma Recompensa, mas podemos emiti-los por outros motivos, como quando uma Experiência de Viagem não atende aos nossos padrões.</li>
+            <li><strong>Onde encontrar seus Créditos:</strong> Após receber Créditos, você verá um link “Recompensas e Carteira” no menu da sua Conta. Na aba “Carteira”, você verá o saldo total de Créditos (dividido em Créditos de Viagem e Créditos em Dinheiro, se aplicável), quando foram recebidos ou gastos e quando expiram. Para Créditos em Dinheiro, você verá um link para sacá-los.</li>
+            <li><strong>Tipos de Créditos:</strong> Créditos de Viagem só podem ser usados em certas Experiências de Viagem (mostraremos quais). Créditos em Dinheiro podem ser sacados para seu Método de Pagamento ou usados em qualquer Experiência de Viagem que aceite Créditos de Viagem.</li>
+        </ol>
+
+        <h3>A14. Direitos de Propriedade Intelectual</h3>
+        <ol>
+            <li>Salvo indicação em contrário, todos os direitos em nossa Plataforma (tecnologia, conteúdo, marcas, aparência, etc.) pertencem à Reservei Viagens ou seus licenciadores. Ao usar nossa Plataforma, você concorda em usá-la apenas para seu propósito pretendido e respeitar as condições abaixo.</li>
+            <li>Você não pode monitorar, copiar, raspar, baixar, reproduzir ou usar qualquer coisa em nossa Plataforma para fins comerciais sem permissão escrita da Reservei Viagens ou seus licenciadores.</li>
+            <li>Monitoramos todas as visitas à nossa Plataforma e bloquearemos qualquer pessoa (ou sistema automatizado) que suspeitarmos de:
+                <ul>
+                    <li>realizar uma quantidade excessiva de pesquisas;</li>
+                    <li>usar dispositivos ou softwares para coletar preços ou outras informações;</li>
+                    <li>fazer qualquer coisa que cause estresse indevido à nossa Plataforma.</li>
+                </ul>
+            </li>
+            <li>Ao fazer upload de fotos em nossa Plataforma (ex.: para uma avaliação), você confirma que ela cumpre nossos critérios e que:
+                <ul>
+                    <li>é verdadeira (ex.: não foi alterada ou não é de uma propriedade diferente);</li>
+                    <li>não contém vírus;</li>
+                    <li>você tem permissão para compartilhá-la conosco;</li>
+                    <li>podemos usá-la em nossa Plataforma e para fins comerciais (incluindo promocionais), em qualquer lugar, para sempre;</li>
+                    <li>não infringe os direitos de privacidade de outras pessoas;</li>
+                    <li>você aceita total responsabilidade por quaisquer reivindicações legais contra a Reservei Viagens relacionadas a ela.</li>
+                </ul>
+            </li>
+            <li>Não somos responsáveis por fotos carregadas em nossa Plataforma e podemos removê-las a nosso critério.</li>
+        </ol>
+
+        <h3>A15. E se algo der errado?</h3>
+        <ol>
+            <li>Se você tiver uma dúvida ou reclamação, contate nossa equipe de Atendimento ao Cliente pelo e-mail <a href="mailto:comercial@reserveiviagens.com.br">comercial@reserveiviagens.com.br</a> ou WhatsApp (64) 99319-7555. Forneça:
+                <ul>
+                    <li>o número de confirmação da Reserva, seus dados de contato e o e-mail usado na reserva;</li>
+                    <li>um resumo do problema, incluindo como gostaria que o ajudássemos;</li>
+                    <li>quaisquer documentos de suporte (ex.: extrato bancário, fotos, recibos).</li>
+                </ul>
+            </li>
+            <li>Todas as dúvidas e reclamações são registradas, e as mais urgentes são tratadas com maior prioridade.</li>
+            <li>Se você for residente do Brasil e não estiver satisfeito com a forma como lidamos com sua reclamação, pode registrar uma reclamação na Plataforma Brasileira de Resolução de Disputas do Consumidor (<a href="http://consumidor.gov.br">consumidor.gov.br</a>).</li>
+            <li>Tentamos resolver disputas internamente e não somos obrigados a submeter a procedimentos alternativos de resolução de disputas por provedores independentes.</li>
+        </ol>
+
+        <h3>A16. Comunicação com o Prestador de Serviços</h3>
+        <ol>
+            <li>Podemos ajudar você a se comunicar com o Prestador de Serviços, mas não garantimos que eles lerão ou agirão conforme sua solicitação. O fato de você contatá-los ou eles contatarem você não significa que você tenha base para ações legais.</li>
+        </ol>
+
+        <h3>A17. Medidas contra Comportamento Inaceitável</h3>
+        <ol>
+            <li>Temos o direito de impedir que você faça Reservas, cancelar Reservas feitas ou proibir o uso de nossa Plataforma, Atendimento ao Cliente ou Conta, se, em nossa opinião, houver uma boa razão, como:
+                <ul>
+                    <li>fraude ou abuso;</li>
+                    <li>descumprimento de Nossos Valores ou leis aplicáveis;</li>
+                    <li>comportamento inadequado ou ilegal (ex.: violência, ameaças, invasão de privacidade) em relação a nós, empresas parceiras ou qualquer outra pessoa.</li>
+                </ul>
+            </li>
+            <li>Se cancelarmos uma Reserva por esses motivos, você não terá direito a reembolso. Podemos informar o motivo do cancelamento, salvo se isso violar leis aplicáveis ou impedir a detecção de fraudes. Se acreditar que cancelamos sua Reserva incorretamente, contate nossa equipe de Atendimento ao Cliente.</li>
+        </ol>
+
+        <h3>A18. Limitação de Responsabilidade</h3>
+        <ol>
+            <li>Estes Termos limitam nossa responsabilidade conforme permitido por lei. Nada nestes Termos limitará nossa responsabilidade (ou do Prestador de Serviços) por (i) negligência que resulte em morte ou lesão pessoal ou (ii) fraude, má conduta intencional ou negligência grave. A Reservei Viagens não será responsável por perdas fora dos direitos e responsabilidades descritos nesta seção, salvo se causadas por nossa violação destes Termos. Como exemplos não limitativos, não seremos responsáveis por:
+                <ul>
+                    <li>perdas indiretas ou consequenciais;</li>
+                    <li>perda de lucros, uso, dados, receitas, oportunidades de negócios ou boa vontade;</li>
+                    <li>danos especiais, punitivos ou exemplares;</li>
+                    <li>informações imprecisas sobre um Prestador de Serviços;</li>
+                    <li>produtos, serviços ou ações de um Prestador de Serviços ou parceiro comercial;</li>
+                    <li>erros em e-mails, números de telefone ou cartões de crédito (salvo se forem nossa culpa);</iann>
+                    <li>força maior ou eventos fora de nosso controle.</li>
+                </ul>
+            </li>
+            <li>Se você violar estes Termos e/ou os termos do Prestador de Serviços, na medida permitida por lei:
+                <ul>
+                    <li>não seremos responsáveis por quaisquer custos incorridos por você;</li>
+                    <li>você não terá direito a reembolso.</li>
+                </ul>
+            </li>
+            <li>O custo da sua Reserva, conforme mostrado no e-mail de confirmação, é o máximo que nós ou qualquer Prestador de Serviços seremos responsáveis, seja por um evento ou uma série de eventos. Essas limitações de responsabilidade se aplicam a todas as formas de ação legal.</li>
+            <li>Salvo disposição expressa, a Reservei Viagens não faz representações, garantias ou compromissos relacionados aos produtos ou serviços dos Prestadores de Serviços. Você assume a responsabilidade por garantir que esses produtos ou serviços sejam adequados aos seus objetivos. Na medida permitida por lei, a Reservei Viagens renuncia a todas as garantias, incluindo garantias de comercialização e adequação a um propósito específico.</li>
+            <li>Nada nestes Termos dará a terceiros, exceto ao Prestador de Serviços, qualquer direito.</li>
+        </ol>
+
+        <h3>A19. Acordo de Arbitragem</h3>
+        <p>Leia este acordo de arbitragem cuidadosamente, pois ele pode afetar seus direitos. Ele estipula que a maioria dos litígios será resolvida por arbitragem vinculativa, em vez de ações judiciais. Este acordo permanecerá em vigor após o término destes Termos.</p>
+        <ol>
+            <li><strong>Lei Aplicável e Jurisdição:</strong> Este acordo de arbitragem e estes Termos são regidos pela legislação brasileira, conforme a Lei nº 9.307/1996 (Lei de Arbitragem). Quaisquer litígios ou reclamações não sujeitos a arbitragem serão resolvidos exclusivamente nos tribunais de Cuiabá, MT, e você consente com a jurisdição pessoal nesses tribunais. Se a lei local aplicável impedir que um litígio seja resolvido nesses tribunais, os tribunais locais terão jurisdição.</li>
+            <li><strong>Escopo:</strong> Este acordo de arbitragem abrange todas as Reclamações (definidas abaixo) decorrentes do uso da Plataforma, serviços fornecidos pela Reservei Viagens ou sua relação conosco, incluindo a interpretação e o escopo deste acordo. As Reclamações incluem litígios baseados em contrato, responsabilidade civil, estatuto, fraude, má representação ou qualquer outro veículo legal, salvo exceções expressas abaixo.</li>
+            <li><strong>Procedimento de Exclusão:</strong> Você pode optar por não participar deste acordo de arbitragem dentro de 30 dias após a primeira utilização da Plataforma, serviços ou transação com a Reservei Viagens, enviando uma notificação por escrito para <a href="mailto:comercial@reserveiviagens.com.br">comercial@reserveiviagens.com.br</a> com a mensagem: “Arbitragem – Notificação de Exclusão”. A notificação deve ser recebida dentro de 3 dias após o prazo de 30 dias.</li>
+            <li><strong>Resolução Pré-Litígio:</strong> Antes de iniciar qualquer litígio, você deve nos dar a oportunidade de resolver reclamações enviando-as por escrito para <a href="mailto:comercial@reserveiviagens.com.br">comercial@reserveiviagens.com.br</a> com: (1) seu nome, (2) endereço, (3) e-mail usado na reserva, (4) número da reserva, (5) data da reserva, (6) nome da propriedade reservada, (7) descrição do problema, (8) resolução desejada, e a mensagem deve começar com “Solicitação Sob Acordo de Arbitragem”. Se não resolvermos a reclamação em 60 dias, você poderá buscar alívio conforme este acordo.</li>
+            <li><strong>Procedimento de Arbitragem:</strong> A arbitragem será conduzida pela Câmara de Mediação e Arbitragem de Cuiabá (CMAC) ou outra câmara escolhida por nós, se a CMAC não puder administrar. A Reservei Viagens pagará todas as taxas de arbitragem, exceto a taxa inicial de apresentação, que será paga por você. Para reclamações abaixo de R$5.000, reembolsaremos a taxa inicial mediante solicitação escrita com prova de insuficiência de fundos. A arbitragem será conduzida em português, com base em submissões escritas para reclamações abaixo de R$50.000, salvo se você solicitar uma audiência presencial ou por telefone, ou se o árbitro determinar que é necessário.</li>
+            <li><strong>Decisão de Arbitragem:</strong> O árbitro poderá conceder alívio declaratório ou injuntivo apenas em seu favor individualmente, sem afetar outros clientes da Reservei Viagens. A arbitragem será confidencial, e nenhuma parte pode divulgar sua existência, conteúdo ou resultados, exceto conforme exigido por lei.</li>
+            <li><strong>Exceções ao Acordo de Arbitragem:</strong> As seguintes reclamações não estão sujeitas à arbitragem e serão levadas a tribunais competentes:
+                <ul>
+                    <li>reivindicações de violação de direitos de propriedade intelectual;</li>
+                    <li>ações buscando alívio injuntivo emergencial por circunstâncias graves;</li>
+                    <li>pedidos de alívio injuntivo público, quando permitido por lei.</li>
+                </ul>
+            </li>
+            <li><strong>Renúncia a Ações Coletivas:</strong> Você e a Reservei Viagens concordam que qualquer procedimento, seja em arbitragem ou tribunal, será conduzido apenas individualmente, não em ações coletivas, consolidadas ou representativas, exceto para alívio injuntivo conforme descrito. Se esta renúncia for considerada inexequível, o acordo de arbitragem não se aplicará a você.</li>
+            <li><strong>Renúncia a Júri:</strong> Se uma reclamação for levada a tribunal, você e nós renunciamos ao direito a um julgamento por júri.</li>
+        </ol>
+
+        <h3>A20. Arranjos de Viagem Vinculados</h3>
+        <ol>
+            <li>Se, após selecionar e pagar por um serviço de viagem, você reservar serviços adicionais para sua viagem durante a mesma visita à Plataforma, ou por meio de um link fornecido por nós dentro de 24 horas após a confirmação da Reserva inicial, você não se beneficiará dos direitos aplicáveis a pacotes sob a legislação brasileira ou da UE/UK. Portanto, não seremos responsáveis pelo desempenho adequado desses serviços de viagem. Para problemas, contate o Prestador de Serviços relevante.</li>
+            <li>Nesses casos, os serviços de viagem formarão um arranjo de viagem vinculado, não um pacote. A Reservei Viagens possui proteção para reembolsar seus pagamentos por serviços não realizados devido à nossa insolvência, mas isso não cobre a insolvência do Prestador de Serviços.</li>
+        </ol>
+
+        <h2 id="section-b">B. Hospedagens</h2>
+        <h3>B1. Escopo desta Seção</h3>
+        <ol>
+            <li>Esta seção contém os termos específicos para produtos e serviços de Hospedagens.</li>
+        </ol>
+
+        <h3>B2. Relacionamento Contratual</h3>
+        <ol>
+            <li>Quando você faz uma Reserva, ela é diretamente com o Prestador de Serviços. Não somos uma “parte contratual” da sua Reserva.</li>
+            <li>A Reservei Viagens Ltda. possui e opera a Plataforma.</li>
+            <li>Nossa Plataforma exibe apenas Hospedagens que têm uma relação comercial conosco, e não necessariamente todos os seus produtos ou serviços.</li>
+            <li>As informações sobre Prestadores de Serviços (ex.: instalações, regras da casa, medidas de sustentabilidade) e suas Experiências de Viagem (ex.: preços, disponibilidade, políticas de cancelamento) são baseadas no que eles nos fornecem. Eles são responsáveis por garantir que sejam precisas e atualizadas.</li>
+        </ol>
+
+        <h3>B3. O que faremos</h3>
+        <ol>
+            <li>Fornecemos a Plataforma na qual os Prestadores de Serviços podem promover e vender suas Hospedagens, e você pode pesquisar, comparar e reservá-las.</li>
+            <li>Após reservar sua Hospedagem, forneceremos a você e ao Prestador de Serviços os detalhes da sua Reserva, incluindo os nomes dos hóspedes.</li>
+            <li>Dependendo dos termos da sua Reserva, podemos ajudá-lo a alterar ou cancelar, se desejar.</li>
+        </ol>
+
+        <h3>B4. O que você precisa fazer</h3>
+        <ol>
+            <li>Preencha todos os seus dados de contato corretamente, para que nós e/ou o Prestador de Serviços possamos fornecer informações sobre sua Reserva e, se necessário, contatá-lo.</li>
+            <li>Leia atentamente estes Termos e os termos exibidos durante o processo de reserva.</li>
+            <li>Cuide da Hospedagem e de seus móveis, acessórios, eletrônicos e outros conteúdos, deixando tudo no mesmo estado em que encontrou. Se algo estiver quebrado, danificado ou perdido, informe à equipe no local o mais rápido possível, antes do check-out.</li>
+            <li>Mantenha a segurança da Hospedagem e de seus conteúdos durante sua estadia. Por exemplo, não deixe portas ou janelas destrancadas.</li>
+        </ol>
+
+        <h3>B5. Preço e Pagamento</h3>
+        <ol>
+            <li>Consulte “Preços” (A6) e “Pagamento” (A7) acima.</li>
+        </ol>
+
+        <h3>B6. Alterações, Cancelamentos e Reembolsos</h3>
+        <ol>
+            <li>Consulte “Políticas” (A8) acima.</li>
+        </ol>
+
+        <h3>B7. O que mais você precisa saber?</h3>
+        <h4>Equiparação de Preços</h4>
+        <ol>
+            <li>Queremos que você obtenha o melhor preço possível. Se, após reservar sua Hospedagem conosco, você encontrar a mesma Hospedagem (com as mesmas condições) por menos em outro site, prometemos reembolsar a diferença, sujeito aos termos e condições de Equiparação de Preços.</li>
+        </ol>
+        <h4>Ofertas de Parceiros</h4>
+        <ol>
+            <li>Algumas ofertas em nossa Plataforma são marcadas como “Ofertas de Parceiros”, o que significa que vêm de uma empresa parceira da Reservei Viagens, não diretamente de um Prestador de Serviços. Salvo indicação em contrário, qualquer Oferta de Parceiro que você reservar:
+                <ul>
+                    <li>Deve ser paga no momento da reserva;</li>
+                    <li>Não pode ser modificada. No entanto, se oferecer cancelamento gratuito, você poderá cancelar gratuitamente, desde que o faça a tempo;</li>
+                    <li>Não pode ser combinada com outras ofertas (promoções, incentivos ou recompensas);</li>
+                    <li>Não pode ser avaliada ou revisada em nossa Plataforma.</li>
+                </ul>
+            </li>
+        </ol>
+        <h4>Incentivos de Preço pela Reservei Viagens</h4>
+        <ol>
+            <li>Algumas reduções de preço que você vê são financiadas por nós, não pelo Prestador de Serviços. Nós simplesmente pagamos parte do custo.</li>
+        </ol>
+        <h4>Política de Danos</h4>
+        <ol>
+            <li>Durante a reserva, você pode ver que alguns Prestadores de Serviços mencionam uma “política de danos”. Isso significa que, se alguém do seu grupo perder ou danificar algo:
+                <ul>
+                    <li>você deve informar o Prestador de Serviços;</li>
+                    <li>em vez de cobrar diretamente, o Prestador de Serviços terá 14 dias para enviar uma solicitação de pagamento de danos por meio de nossa Plataforma, usando o número da sua reserva;</li>
+                    <li>se o fizerem, informaremos você, e você poderá nos dizer se tem comentários e se concorda com a cobrança:
+                        <ul>
+                            <li>se concordar, cobraremos em nome deles;</li>
+                            <li>se discordar, investigaremos e decidiremos se discutiremos mais.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>Há um limite (exibido durante a reserva) para o quanto o Prestador de Serviços pode cobrar por meio de nossa Plataforma sob a política de danos.</li>
+            <li>Qualquer pagamento será entre você e o Prestador de Serviços. Nós apenas organizaremos em nome deles.</li>
+            <li>A política de danos não se refere a limpeza geral, desgaste comum, crimes (como roubo) ou “danos” não físicos (ex.: multas por fumar ou trazer animais).</li>
+            <li>O Prestador de Serviços pode exigir um “depósito de danos” antes ou no check-in. Se o fizer, informaremos durante a reserva, mas isso não tem relação com a política de danos. Não estaremos envolvidos em qualquer liquidação financeira relacionada a depósitos de danos.</li>
+        </ol>
+
+        <h2 id="section-c">C. Atrações</h2>
+        <h3>C1. Escopo desta Seção</h3>
+        <ol>
+            <li>Esta seção contém os termos específicos para produtos e serviços de Atrações.</li>
+        </ol>
+
+        <h3>C2. Relacionamento Contratual</h3>
+        <ol>
+            <li>Não revendemos, oferecemos ou fornecemos Atrações por conta própria. Ao reservar uma Atração, você celebra um contrato diretamente com (a) o Prestador de Serviços ou (b) um Agregador de Terceiros (se estiver revendendo a Atração), conforme divulgado durante o processo de reserva.</li>
+            <li>Atuamos apenas como Plataforma e não estamos envolvidos nos Termos de Terceiros. Não somos responsáveis pelo seu ingresso e, na medida permitida por lei, não temos responsabilidade em relação à sua Reserva.</li>
+        </ol>
+
+        <h3>C3. O que faremos</h3>
+        <ol>
+            <li>Fornecemos a Plataforma na qual Prestadores de Serviços e, ocasionalmente, Agregadores de Terceiros podem promover e vender Experiências de Viagem, e você pode pesquisar, comparar e reservá-las.</li>
+            <li>Após reservar sua Atração, forneceremos a você e ao Prestador de Serviços os detalhes da Reserva. Se o Prestador de Serviços precisar de mais do que seu nome, informaremos no momento da reserva.</li>
+            <li>Dependendo dos termos da sua Reserva, podemos ajudá-lo a alterar ou cancelar, se desejar.</li>
+        </ol>
+
+        <h3>C4. O que você precisa fazer</h3>
+        <ol>
+            <li>Você deve preencher todos os seus dados de contato corretamente,

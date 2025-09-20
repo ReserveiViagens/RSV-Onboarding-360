@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "github.copilot.enable": { "*": true },
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "python.linting.enabled": true,
+  "eslint.validate": ["javascript", "typescript"],
+  "git.ignoreLimitWarning": true,
+  "terminal.integrated.accessibleViewPreserveCursorPosition": true
+}

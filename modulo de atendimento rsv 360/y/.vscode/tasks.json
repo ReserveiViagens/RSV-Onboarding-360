@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install BMAD",
+      "type": "shell",
+      "command": "npx bmad-method install",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker Compose Up",
+      "type": "shell",
+      "command": "docker-compose up",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Transfer to VPS",
+      "type": "shell",
+      "command": "scp -r . user@your-vps-ip:/path/to/project",
+      "group": "deploy",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Frontend Build",
+      "type": "shell",
+      "command": "npm run build",
+      "cwd": "${workspaceFolder}/frontend",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Backend Tests",
+      "type": "shell",
+      "command": "pytest",
+      "cwd": "${workspaceFolder}/backend",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+} 

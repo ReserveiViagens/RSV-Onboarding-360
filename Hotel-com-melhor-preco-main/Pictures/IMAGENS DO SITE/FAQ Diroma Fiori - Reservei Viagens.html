@@ -1,0 +1,133 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Perguntas frequentes sobre o Diroma Fiori em Caldas Novas. Descubra como reservar, comodidades e políticas com a Reservei Viagens. Reserve agora!">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="FAQ Diroma Fiori em Caldas Novas - Reservei Viagens">
+    <meta property="og:description" content="Saiba tudo sobre o Diroma Fiori em Caldas Novas: comodidades, reservas, políticas e mais. Reserve com a Reservei Viagens e viva uma estadia inesquecível!">
+    <meta property="og:image" content="https://www.reserveiviagens.com.br/images/diroma-fiori-faq.jpg">
+    <meta property="og:url" content="https://www.reserveiviagens.com.br/hotel/diroma-fiori-caldas-novas#faq">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="FAQ Diroma Fiori em Caldas Novas - Reservei Viagens">
+    <meta name="twitter:description" content="Saiba tudo sobre o Diroma Fiori em Caldas Novas: comodidades, reservas, políticas e mais. Reserve com a Reservei Viagens e viva uma estadia inesquecível!">
+    <meta name="twitter:image" content="https://www.reserveiviagens.com.br/images/diroma-fiori-faq.jpg">
+    <link rel="canonical" href="https://www.reserveiviagens.com.br/hotel/diroma-fiori-caldas-novas#faq">
+    <title>Perguntas Frequentes - Diroma Fiori em Caldas Novas | Reservei Viagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            color: #003580;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #003580;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="faq">Perguntas Frequentes sobre o Diroma Fiori em Caldas Novas</h2>
+        
+        <h3>O que o Diroma Fiori em Caldas Novas oferece aos hóspedes?</h3>
+        <p>O <strong>Diroma Fiori em Caldas Novas</strong> é perfeito para quem busca relaxamento e diversão. Oferece <strong>piscinas termais ao ar livre</strong>, sauna, academia, brinquedos aquáticos para crianças e um apartamento amplo com <strong>2 quartos, 5 camas e 2 banheiros</strong>, ideal para até 8 pessoas. Com <strong>Wi-Fi gratuito</strong> e <strong>estacionamento privativo</strong>, garante conforto total. Aproveite a localização nota <strong>9.0</strong>, próxima ao <a href="https://www.reserveiviagens.com.br/atracoes/acqua-park-di-roma">Acqua Park Di Roma</a>!</p>
+        
+        <h3>Como faço para reservar o Diroma Fiori com a Reservei Viagens?</h3>
+        <p>Reservar é fácil e seguro com a <strong>Reservei Viagens</strong>! Acesse nossa plataforma, selecione suas datas e finalize a reserva com <strong>cancelamento flexível</strong> em várias opções. Para dúvidas, contate-nos pelo <strong>WhatsApp (64) 99319-7555</strong> ou e-mail <strong><a href="mailto:reservas@reserveiviagens.com.br">reservas@reserveiviagens.com.br</a></strong>. <strong>Reserve agora</strong> e garanta sua estadia dos sonhos!</p>
+        
+        <h3>O Diroma Fiori é adequado para famílias com crianças?</h3>
+        <p>Sim! O <strong>Diroma Fiori em Caldas Novas</strong> é ideal para famílias, com brinquedos aquáticos que encantam as crianças e um ambiente tranquilo. “Minha filha amou os brinquedos nas piscinas!” – Kelly, hóspede. O apartamento espaçoso e a cozinha equipada oferecem praticidade para grupos.</p>
+        
+        <h3>Quais são as políticas de check-in e check-out?</h3>
+        <p>O check-in no <strong>Diroma Fiori</strong> é a partir das <strong>14:00</strong>, e o check-out até as <strong>12:00</strong>. Informe seu horário de chegada com antecedência para uma experiência sem complicações. Nossa equipe está disponível 24/7 para ajudar.</p>
+        
+        <h3>Posso cancelar minha reserva no Diroma Fiori?</h3>
+        <p>As políticas de cancelamento variam conforme a opção escolhida. Muitas tarifas oferecem <strong>cancelamento gratuito</strong> até um prazo específico. Verifique os detalhes no momento da reserva ou contate a <strong>Reservei Viagens</strong> para mais informações.</p>
+        
+        <h3>Por que escolher a Reservei Viagens para minha estadia?</h3>
+        <p>Com <strong>20 anos de experiência</strong> em Caldas Novas, a Reservei Viagens oferece os melhores preços, atendimento 24/7 e uma plataforma segura. <strong>Transforme sua viagem</strong> em uma memória eterna – reserve no Diroma Fiori hoje!</p>
+        
+        <a href="https://www.reserveiviagens.com.br/reservar/diroma-fiori" class="cta-button">Reserve Agora!</a>
+    </div>
+</body>
+</html>

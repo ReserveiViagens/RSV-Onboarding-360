@@ -1,0 +1,401 @@
+services:
+  # 🐘 Database PostgreSQL Otimizado
+  postgres:
+    build:
+      context: database
+      dockerfile: Dockerfile
+    container_name: onion-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: onion_rsv_360_secure!
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_archive:/var/lib/postgresql/archive
+      - postgres_backup:/var/lib/postgresql/backup
+      - postgres_logs:/var/log/postgresql
+    networks:
+      - onion-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command:
+      [
+        "postgres",
+        "-c",
+        "config_file=/etc/postgresql/postgresql.conf",
+        "-c",
+        "hba_file=/etc/postgresql/pg_hba.conf",
+      ]
+
+  # 🌐 Load Balancer / API Gateway
+  nginx:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "8081:8080" # Monitoring
+    depends_on:
+      - core
+      - travel
+      - finance
+      - tickets
+      - attractions
+      - payments
+      - ecommerce
+    networks:
+      - onion-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - nginx_logs:/var/log/nginx
+  core:
+    build:
+      context: .
+      dockerfile: backend/core/Dockerfile
+    ports:
+      - "5000:5000"
+    command: uvicorn app:app --host 0.0.0.0 --port 5000 --reload
+    networks:
+      - onion-network
+
+  travel:
+    build:
+      context: .
+      dockerfile: backend/travel/Dockerfile
+    ports:
+      - "5003:5003"
+    command: uvicorn app:app --host 0.0.0.0 --port 5003 --reload
+    networks:
+      - onion-network
+
+  finance:
+    build:
+      context: .
+      dockerfile: backend/finance/Dockerfile
+    ports:
+      - "5005:5005"
+    command: uvicorn app:app --host 0.0.0.0 --port 5005 --reload
+    networks:
+      - onion-network
+
+  tickets:
+    build:
+      context: .
+      dockerfile: backend/tickets/Dockerfile
+    ports:
+      - "5006:5006"
+    command: uvicorn app:app --host 0.0.0.0 --port 5006 --reload
+    networks:
+      - onion-network
+
+  attractions:
+    build:
+      context: .
+      dockerfile: backend/attractions/Dockerfile
+    ports:
+      - "5009:5009"
+    command: uvicorn app:app --host 0.0.0.0 --port 5009 --reload
+    networks:
+      - onion-network
+
+  payments:
+    build:
+      context: ./backend/payments
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5005"
+    command: uvicorn app:app --host 0.0.0.0 --port 5005 --reload
+    networks:
+      - onion-network
+
+  ecommerce:
+    build:
+      context: .
+      dockerfile: backend/ecommerce/Dockerfile
+    ports:
+      - "5008:5007"
+    command: uvicorn app:app --host 0.0.0.0 --port 5007
+    networks:
+      - onion-network
+
+  vouchers:
+    build:
+      context: ./backend/vouchers
+      dockerfile: Dockerfile
+    ports:
+      - "5010:5028"
+    command: uvicorn app:app --host 0.0.0.0 --port 5028
+    networks:
+      - onion-network
+
+  voucher-editor:
+    build:
+      context: ./backend/voucher-editor
+      dockerfile: Dockerfile
+    ports:
+      - "5011:5029"
+    command: uvicorn app:app --host 0.0.0.0 --port 5029
+    networks:
+      - onion-network
+
+  giftcards:
+    build:
+      context: ./backend/giftcards
+      dockerfile: Dockerfile
+    ports:
+      - "5012:5028"
+    command: uvicorn app:app --host 0.0.0.0 --port 5028
+    networks:
+      - onion-network
+
+  coupons:
+    build:
+      context: ./backend/coupons
+      dockerfile: Dockerfile
+    ports:
+      - "5013:8012"
+    command: uvicorn app:app --host 0.0.0.0 --port 8012
+    networks:
+      - onion-network
+
+  parks:
+    build:
+      context: ./backend/parks
+      dockerfile: Dockerfile
+    ports:
+      - "5014:5008"
+    command: uvicorn app:app --host 0.0.0.0 --port 5008
+    networks:
+      - onion-network
+
+  maps:
+    build:
+      context: .
+      dockerfile: backend/maps/Dockerfile
+    ports:
+      - "5015:8022"
+    command: uvicorn app:app --host 0.0.0.0 --port 8022
+    networks:
+      - onion-network
+
+  visa:
+    build:
+      context: .
+      dockerfile: backend/visa/Dockerfile
+    ports:
+      - "5016:8017"
+    command: uvicorn app:app --host 0.0.0.0 --port 8017
+    networks:
+      - onion-network
+
+  marketing:
+    build:
+      context: ./backend/marketing
+      dockerfile: Dockerfile
+    ports:
+      - "5017:5014"
+    command: uvicorn app:app --host 0.0.0.0 --port 5014
+    networks:
+      - onion-network
+
+  subscriptions:
+    build:
+      context: .
+      dockerfile: backend/subscriptions/Dockerfile
+    ports:
+      - "5018:8010"
+    command: uvicorn app:app --host 0.0.0.0 --port 8010
+    networks:
+      - onion-network
+
+  seo:
+    build:
+      context: .
+      dockerfile: backend/seo/Dockerfile
+    ports:
+      - "5019:8008"
+    command: uvicorn app:app --host 0.0.0.0 --port 8008
+    networks:
+      - onion-network
+
+  multilingual:
+    build:
+      context: .
+      dockerfile: backend/multilingual/Dockerfile
+    ports:
+      - "5020:8009"
+    command: uvicorn app:app --host 0.0.0.0 --port 8009
+    networks:
+      - onion-network
+
+  videos:
+    build:
+      context: .
+      dockerfile: backend/videos/Dockerfile
+    ports:
+      - "5021:8023"
+    command: uvicorn app:app --host 0.0.0.0 --port 8023
+    networks:
+      - onion-network
+
+  photos:
+    build:
+      context: .
+      dockerfile: backend/photos/Dockerfile
+    ports:
+      - "5022:8024"
+    command: uvicorn app:app --host 0.0.0.0 --port 8024
+    networks:
+      - onion-network
+
+  admin:
+    build:
+      context: .
+      dockerfile: backend/admin/Dockerfile
+    ports:
+      - "5023:8025"
+    command: uvicorn app:app --host 0.0.0.0 --port 8025
+    networks:
+      - onion-network
+
+  analytics:
+    build:
+      context: .
+      dockerfile: backend/analytics/Dockerfile
+    ports:
+      - "5024:8026"
+    command: uvicorn app:app --host 0.0.0.0 --port 8026
+    networks:
+      - onion-network
+
+  reports:
+    build:
+      context: .
+      dockerfile: backend/reports/Dockerfile
+    ports:
+      - "5025:8027"
+    command: uvicorn app:app --host 0.0.0.0 --port 8027
+    networks:
+      - onion-network
+
+  data:
+    build:
+      context: .
+      dockerfile: backend/data/Dockerfile
+    ports:
+      - "5026:8028"
+    command: uvicorn app:app --host 0.0.0.0 --port 8028
+    networks:
+      - onion-network
+
+  notifications:
+    build:
+      context: .
+      dockerfile: backend/notifications/Dockerfile
+    ports:
+      - "5027:8029"
+    command: uvicorn app:app --host 0.0.0.0 --port 8029
+    networks:
+      - onion-network
+
+  reviews:
+    build:
+      context: .
+      dockerfile: backend/reviews/Dockerfile
+    ports:
+      - "5028:8030"
+    command: uvicorn app:app --host 0.0.0.0 --port 8030
+    networks:
+      - onion-network
+
+  rewards:
+    build:
+      context: .
+      dockerfile: backend/rewards/Dockerfile
+    ports:
+      - "5029:8031"
+    command: uvicorn app:app --host 0.0.0.0 --port 8031
+    networks:
+      - onion-network
+
+  loyalty:
+    build:
+      context: .
+      dockerfile: backend/loyalty/Dockerfile
+    ports:
+      - "5030:8032"
+    command: uvicorn app:app --host 0.0.0.0 --port 8032
+    networks:
+      - onion-network
+
+  sales:
+    build:
+      context: .
+      dockerfile: backend/sales/Dockerfile
+    ports:
+      - "5031:8033"
+    command: uvicorn app:app --host 0.0.0.0 --port 8033
+    networks:
+      - onion-network
+
+  sectoral_finance:
+    build:
+      context: .
+      dockerfile: backend/sectoral_finance/Dockerfile
+    ports:
+      - "5032:8034"
+    command: uvicorn app:app --host 0.0.0.0 --port 8034
+    networks:
+      - onion-network
+
+  refunds:
+    build:
+      context: .
+      dockerfile: backend/refunds/Dockerfile
+    ports:
+      - "5033:8035"
+    command: uvicorn app:app --host 0.0.0.0 --port 8035
+    networks:
+      - onion-network
+
+  inventory:
+    build:
+      context: .
+      dockerfile: backend/inventory/Dockerfile
+    ports:
+      - "5034:8036"
+    command: uvicorn app:app --host 0.0.0.0 --port 8036
+    networks:
+      - onion-network
+
+# Redes
+networks:
+  onion-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  nginx_logs:
+    driver: local
+  postgres_data:
+    driver: local
+  postgres_archive:
+    driver: local
+  postgres_backup:
+    driver: local
+  postgres_logs:
+    driver: local
